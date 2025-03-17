@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Incident Management System</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">Submit Incident</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="validateAdminAccess()">Admin Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <button id="logoutButton" class="btn btn-danger">Logout</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Submit a New Incident</h5>
+            <form id="incident-form">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Short Description</label>
+                    <input type="text" id="title" class="form-control" placeholder="Briefly describe the issue" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Detailed Description</label>
+                    <textarea id="description" class="form-control" placeholder="Provide a detailed description" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Severity Level</label>
+                    <select id="status" class="form-select">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Incident</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h5>Your Incidents</h5>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>Incident ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody id="incidents-table">
+        <!-- Dynamically populated rows -->
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Incident Management System</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Submit Incident</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Admin Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="similarity-search.html">Similarity Search</a>
+        </li>
+        <li class="nav-item">
+          <button id="logoutButton" class="btn btn-danger">Logout</button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Admin Dashboard Content -->
+<div class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">All Incidents</h5>
+
+      <!-- Add Filter Dropdowns ABOVE the table -->
+      <div class="mb-3">
+        <label for="filterStatus" class="form-label">Filter by Status:</label>
+        <select id="filterStatus" class="form-select w-25" onchange="filterIncidents()">
+          <option value="All">All</option>
+          <option value="Open">Open</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Closed">Closed</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="filterTeam" class="form-label">Filter by Team:</label>
+        <select id="filterTeam" class="form-select w-25" onchange="filterIncidents()">
+          <option value="All">All</option>
+          <option value="1">IT</option>
+          <option value="2">HR</option>
+          <option value="3">Support</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="filterAdmin" class="form-label">Filter by Admin:</label>
+        <select id="filterAdmin" class="form-select w-25" onchange="filterIncidents()">
+          <option value="All">All</option>
+          <option value="1">john.doe</option>
+          <option value="2">jane.smith</option>
+          <option value="3">michael.johnson</option>
+        </select>
+      </div>
+
+      <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+          <th>Incident ID</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Severity Level</th>
+          <th>Status</th>
+          <th>Assigned Team</th>
+          <th>Assigned Admin</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="admin-incidents-table">
+        <!-- Incidents will be populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="admin-script.js"></script>
+</body>
+</html>
