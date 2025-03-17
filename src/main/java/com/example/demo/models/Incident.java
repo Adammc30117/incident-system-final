@@ -19,6 +19,9 @@ public class Incident {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "TEXT")
+    private String resolution;  // Details of how it was resolved
+
 
     private String status = "Open"; // ✅ Default to "Open"
 
@@ -113,5 +116,13 @@ public class Incident {
 
     public void setAssignedAdmin(User assignedAdmin) {
         this.assignedAdmin = assignedAdmin;
+    }
+
+    public String getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(String resolution) {
+        this.resolution = resolution;
     }
 }

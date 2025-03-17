@@ -145,3 +145,28 @@ nav a:hover {
 .btn-danger:hover {
     background-color: #c82333;
 }
+
+.incident-details {
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.incident-details select {
+    margin-bottom: 10px;
+}
+
+.incident-details button {
+    margin-top: 10px;
+}
+
+/* style.css or inside a <style> block */
+.wrap-resolution {
+    white-space: pre-wrap;       /* preserve line breaks, wrap text */
+    word-wrap: break-word;       /* wrap long words */
+    overflow-wrap: break-word;   /* modern property for wrapping long words */
+}
+
+

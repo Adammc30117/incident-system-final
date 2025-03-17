@@ -6,6 +6,7 @@ import org.deeplearning4j.models.embeddings.loader.WordVectorSerializer;
 import org.deeplearning4j.models.embeddings.wordvectors.WordVectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import com.example.demo.dto.IncidentMatchResult;
 
 import java.io.File;
 import java.util.*;
@@ -51,8 +52,10 @@ public class IncidentSearchService {
     }
 
     // Main method to search for similar incidents
-    public List<String> searchSimilarIncidents(String incidentNumber, List<Incident> allIncidents) {
-        List<String> results = new ArrayList<>();
+
+
+    public List<IncidentMatchResult> searchSimilarIncidents(String incidentNumber, List<Incident> allIncidents) {
+        List<IncidentMatchResult> results = new ArrayList<>();
 
         // 1. Build global document frequency (DF) map across all incidents
         Map<String, Integer> globalDF = buildGlobalDF(allIncidents);
@@ -65,8 +68,7 @@ public class IncidentSearchService {
                 .orElse(null);
 
         if (targetIncident == null) {
-            results.add("No matching incident found.");
-            return results;
+            return results; // returns an empty list
         }
 
         // 3. Compute global TF-IDF vector for the target incident
@@ -77,35 +79,35 @@ public class IncidentSearchService {
             if (incident.getIncidentNumber().equals(incidentNumber)) continue;
 
             Map<String, Float> comparisonTFIDF = computeTFIDFMap(incident.getDescription(), globalDF, totalDocuments);
-
             float cosineSim = cosineSimilarity(targetTFIDF, comparisonTFIDF);
             float word2vecSim = calculateWord2VecSimilarity(targetIncident.getDescription(), incident.getDescription());
-
-            // Weighted combination
             float finalSimilarity = TFIDF_WEIGHT * cosineSim + WORD2VEC_WEIGHT * word2vecSim;
-
-            // Post-scale the final similarity
-            finalSimilarity *= SCALING_FACTOR;  // e.g., multiply by 2.0
-
-            // Clamp to 1.0 if it exceeds
+            finalSimilarity *= SCALING_FACTOR;
             if (finalSimilarity > 1.0f) {
                 finalSimilarity = 1.0f;
             }
 
             if (finalSimilarity > SIMILARITY_THRESHOLD) {
-                results.add(String.format("Incident %s - %s (%.2f%% match)",
+                String teamName = incident.getAssignedTeam() != null ? incident.getAssignedTeam().getName() : "Unassigned";
+                String adminUsername = incident.getAssignedAdmin() != null ? incident.getAssignedAdmin().getUsername() : "Unassigned";
+
+                IncidentMatchResult matchResult = new IncidentMatchResult(
                         incident.getIncidentNumber(),
                         incident.getTitle(),
-                        finalSimilarity * 100));
+                        incident.getDescription(),
+                        incident.getSeverityLevel(),
+                        incident.getStatus(),
+                        teamName,
+                        adminUsername,
+                        finalSimilarity * 100.0 // match percentage
+                );
+                results.add(matchResult);
             }
-        }
-
-        if (results.isEmpty()) {
-            results.add("No similar incidents found.");
         }
 
         return results;
     }
+
 
     // Build global document frequency map (DF) from all incidents
     private Map<String, Integer> buildGlobalDF(List<Incident> allIncidents) {

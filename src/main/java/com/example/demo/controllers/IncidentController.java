@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.IncidentMatchResult;
 import com.example.demo.models.Incident;
 import com.example.demo.models.User;
 import com.example.demo.models.Team;
@@ -7,6 +8,7 @@ import com.example.demo.repositories.IncidentRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.repositories.TeamRepository;
 import com.example.demo.search.IncidentSearchService;
+import com.example.demo.service.IncidentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,123 +24,95 @@ import java.util.Optional;
 public class IncidentController {
 
     @Autowired
-    private IncidentRepository incidentRepository;
+    private IncidentService incidentService;
 
-    @Autowired
-    private IncidentSearchService incidentSearchService;  // Use the new IncidentSearchService
-
-    @Autowired
-    private UserRepository userRepository;  // For fetching admins
-
-    @Autowired
-    private TeamRepository teamRepository;  // For fetching teams
-
-    // Create an incident
+    // ✅ Create an Incident
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<String> createIncident(@RequestBody Incident incident, Principal principal) {
-        if (principal == null) {
-            return ResponseEntity.badRequest().body("User not authenticated!");
-        }
-
-        incident.setCreatedBy(principal.getName());
-        incident.setSeverityLevel(incident.getSeverityLevel() == null ? "Low" : incident.getSeverityLevel());
-        incident.setStatus("Open"); // Default status to Open
-        incidentRepository.save(incident);
-
-        return ResponseEntity.ok("Incident created successfully!");
+        String response = incidentService.createIncident(incident, principal);
+        return response.equals("Incident created successfully!")
+                ? ResponseEntity.ok(response)
+                : ResponseEntity.badRequest().body(response);
     }
 
+    // ✅ Assign Team & Admin
     @PutMapping("/{id}/assign")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> assignTeamAndAdmin(@PathVariable Long id, @RequestBody Map<String, String> assignments) {
-        Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
-
-        // Get team ID and admin ID from the frontend (ensure it's in the correct format)
-        String assignedTeamId = assignments.get("assignedTeam");
-        String assignedAdminId = assignments.get("assignedAdmin");
-
-        // Check if the values are valid
-        if (assignedTeamId == null || assignedAdminId == null) {
-            return ResponseEntity.badRequest().body("Team or Admin ID is missing!");
-        }
-
-        try {
-            Long teamId = Long.parseLong(assignedTeamId);
-            Long adminId = Long.parseLong(assignedAdminId);
-
-            Optional<Team> team = teamRepository.findById(teamId);
-            User admin = userRepository.findById(adminId).orElse(null);
-
-            // Ensure both team and admin are retrieved correctly
-            if (team.isEmpty() || admin == null || !admin.getRole().equals("ROLE_ADMIN")) {
-                return ResponseEntity.badRequest().body("Team or Admin not found, or Admin is not valid!");
-            }
-
-            // Set the team and admin to the incident
-            incident.setAssignedTeam(team.get());
-            incident.setAssignedAdmin(admin);
-
-            incidentRepository.save(incident);
-            return ResponseEntity.ok("Incident successfully assigned to team and admin!");
-        } catch (NumberFormatException e) {
-            return ResponseEntity.badRequest().body("Invalid team or admin ID format!");
-        }
+        String response = incidentService.assignTeamAndAdmin(id, assignments);
+        return response.equals("Incident successfully updated!")
+                ? ResponseEntity.ok(response)
+                : ResponseEntity.badRequest().body(response);
     }
 
-    // Update Severity Level
+
+    // ✅ Update Severity
     @PutMapping("/{id}/severity")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateSeverity(@PathVariable Long id, @RequestBody Map<String, String> request) {
-        Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
-
-        incident.setSeverityLevel(request.get("severityLevel"));
-        incidentRepository.save(incident);
-
-        return ResponseEntity.ok("Severity level updated successfully!");
+        return ResponseEntity.ok(incidentService.updateSeverity(id, request));
     }
 
-    // Update Status (Open, Ongoing, Closed)
+    // ✅ Update Status
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestBody Map<String, String> request) {
-        Incident incident = incidentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Incident not found"));
-
-        incident.setStatus(request.get("status"));
-        incidentRepository.save(incident);
-
-        return ResponseEntity.ok("Status updated successfully!");
+        return ResponseEntity.ok(incidentService.updateStatus(id, request));
     }
 
+    // ✅ Get All Incidents
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<Incident> getAllIncidents() {
-        return incidentRepository.findAll();  // Use the default method to fetch all incidents
+        return incidentService.getAllIncidents();
     }
 
-    // Delete an incident
+    // ✅ Delete an Incident
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteIncident(@PathVariable Long id) {
-        incidentRepository.deleteById(id);
-        return ResponseEntity.ok("Incident deleted successfully!");
+        return ResponseEntity.ok(incidentService.deleteIncident(id));
     }
 
     // Similarity Search Endpoint (using incident number)
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> searchSimilarIncidents(@RequestParam String incidentNumber) {
-        Incident incident = incidentRepository.findByIncidentNumber(incidentNumber);
-        if (incident == null) {
-            return ResponseEntity.badRequest().body("Incident not found!");
+        try {
+            List<IncidentMatchResult> results = incidentService.searchSimilarIncidents(incidentNumber);
+            if (results.isEmpty()) {
+                return ResponseEntity.badRequest().body("No similar incidents found.");
+            }
+            return ResponseEntity.ok(results);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        List<Incident> allIncidents = incidentRepository.findAll();
-        List<String> results = incidentSearchService.searchSimilarIncidents(incident.getIncidentNumber(), allIncidents);
-
-        return ResponseEntity.ok(results);
     }
+
+
+    // ✅ Get Admins by Team
+    @GetMapping("/admins/by-team/{teamId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<User>> getAdminsByTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(incidentService.getAdminsByTeam(teamId));
+    }
+
+    @PutMapping("/{id}/resolve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> resolveIncident(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request
+    ) {
+        String resolutionText = request.get("resolution");
+        String response = incidentService.resolveIncident(id, resolutionText);
+
+        if (response.equals("Incident resolved successfully!")) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+
+
 }

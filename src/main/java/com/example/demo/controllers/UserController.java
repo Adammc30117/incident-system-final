@@ -1,17 +1,13 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Team;
 import com.example.demo.models.User;
-import com.example.demo.repositories.TeamRepository;
-import com.example.demo.repositories.UserRepository;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -19,54 +15,33 @@ import java.util.Map;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private TeamRepository teamRepository;
-
-    // Endpoint to create a new user
+    // ✅ Create a new user (delegating logic to UserService)
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
-            return new ResponseEntity<>("Username already exists", HttpStatus.CONFLICT);
-        }
+        String response = userService.createUser(user);
 
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("ROLE_USER");
+        if (response.equals("User created successfully!")) {
+            return new ResponseEntity<>(user, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-
-        if (user.getRole().equals("ROLE_ADMIN")) {
-            // Only admins can be assigned to a team, and this is where we associate them with a team
-            Team team = teamRepository.findByName(user.getTeam().getName())
-                    .orElseThrow(() -> new RuntimeException("Team not found"));
-            user.setTeam(team);
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-    // Endpoint to get the role of the logged-in user
+    // ✅ Get the role of the logged-in user (delegating logic to UserService)
     @GetMapping("/role")
     public ResponseEntity<?> getUserRole(Principal principal) {
         if (principal == null) {
             return new ResponseEntity<>("User not authenticated", HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userRepository.findByUsername(principal.getName());
-        if (user == null) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        String role = userService.getUserRole(principal.getName());
+
+        if (role.equals("User not found")) {
+            return new ResponseEntity<>(role, HttpStatus.NOT_FOUND);
         }
 
-        Map<String, String> response = new HashMap<>();
-        response.put("role", user.getRole());
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(Map.of("role", role), HttpStatus.OK);
     }
-
 }
-
-

@@ -1,31 +1,27 @@
 package com.example.demo.controllers;
 
 import com.example.demo.models.Team;
-import com.example.demo.repositories.TeamRepository;
+import com.example.demo.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
 
     @Autowired
-    private TeamRepository teamRepository;
+    private TeamService teamService;
 
-    // Create a new team
+    // ✅ Create a new team (delegating logic to TeamService)
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createTeam(@RequestBody Team team) {
-        if (teamRepository.findByName(team.getName()).isPresent()) {
-            return ResponseEntity.badRequest().body("Team name already exists!");
-        }
+        String response = teamService.createTeam(team);
 
-        teamRepository.save(team); // Save the new team
-        return ResponseEntity.ok("Team created successfully!");
+        return response.equals("Team created successfully!")
+                ? ResponseEntity.ok(response)
+                : ResponseEntity.badRequest().body(response);
     }
 }
