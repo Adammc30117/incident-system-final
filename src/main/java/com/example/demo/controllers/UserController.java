@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.Map;
 
+/**
+ * REST controller responsible for managing user operations such as user creation
+ * and retrieving roles of authenticated users.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -17,7 +21,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // ✅ Create a new user (delegating logic to UserService)
+    /**
+     * Creates a new user.
+     *
+     * @param user User details provided in the request body.
+     * @return ResponseEntity containing created user details or an error message.
+     */
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         String response = userService.createUser(user);
@@ -29,7 +38,12 @@ public class UserController {
         }
     }
 
-    // ✅ Get the role of the logged-in user (delegating logic to UserService)
+    /**
+     * Retrieves the role of the currently authenticated user.
+     *
+     * @param principal Currently authenticated user.
+     * @return ResponseEntity containing the user's role or an appropriate error message.
+     */
     @GetMapping("/role")
     public ResponseEntity<?> getUserRole(Principal principal) {
         if (principal == null) {

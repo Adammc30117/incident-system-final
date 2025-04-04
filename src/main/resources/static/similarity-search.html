@@ -35,7 +35,25 @@
       <input type="text" id="incidentNumber" class="form-control" placeholder="Enter Incident Number (e.g., INC123456)" />
       <button class="btn btn-primary mt-2" onclick="searchSimilarIncidents()">Search</button>
 
+      <!-- New Table for Searched Incident -->
+      <div class="table-responsive mt-4" id="searchedIncidentContainer" style="display: none;">
+        <h5>Searched Incident</h5>
+        <table class="table table-striped table-bordered">
+          <thead class="table-dark">
+          <tr>
+            <th>Incident ID</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="searchedIncidentTable"></tbody>
+        </table>
+      </div>
+
+
       <div class="table-responsive mt-4" id="searchResultsContainer" style="display: none;">
+        <h5>Matched Incidents</h5>
         <table class="table table-striped table-bordered">
           <thead class="table-dark">
           <tr>
@@ -48,6 +66,26 @@
           </thead>
           <tbody id="similarIncidentsTable"></tbody>
         </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Resolution Details Modal -->
+<div class="modal fade" id="resolutionDetailsModal" tabindex="-1" aria-labelledby="resolutionDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resolutionDetailsModalLabel">Resolution Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Make the modal body scrollable and wrap text -->
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <p id="resolutionDetailsText" class="wrap-resolution"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>

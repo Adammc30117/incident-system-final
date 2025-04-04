@@ -1,59 +1,82 @@
-document.addEventListener("DOMContentLoaded", function () {
-    getUserIncidents(); // ✅ Load user-specific incidents after login
-    checkAdminDashboard(); // ✅ Load admin dashboard if applicable
-});
-
-// ✅ API Endpoints
+//  API Endpoints
 const apiUrl = "http://localhost:8080/api/incidents";
 const userIncidentsUrl = `${apiUrl}/user`;
 const adminIncidentsUrl = `${apiUrl}`; // Admin fetches all incidents
 const searchIncidentsUrl = `${apiUrl}/search`;
 
-// ✅ Fetch and display incidents for the logged-in user
+//  Fetch and display incidents for the logged-in user
 function getUserIncidents() {
-    const tableBody = document.querySelector("#incidents-table");
-
-    if (!tableBody) {
-        console.error("Error: #incidents-table element not found!");
-        return;
-    }
-
-    fetch(userIncidentsUrl, { credentials: "include" }) // ✅ Ensure cookies/session are included
+    fetch("http://localhost:8080/api/incidents/my-incidents", {
+        method: "GET",
+        credentials: "same-origin"
+    })
         .then(response => response.json())
         .then(data => {
-            console.log("Fetched User Incidents:", data); // ✅ Debugging output
-            tableBody.innerHTML = ""; // ✅ Clear previous incidents
+            const tableBody = document.querySelector("#incidents-table");
+            tableBody.innerHTML = "";
 
-            if (data.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='4' class='text-center'>No incidents found</td></tr>";
-                return;
-            }
+            data.forEach((incident, index) => {
+                // Main row
+                const mainRow = document.createElement("tr");
 
-            data.forEach(incident => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
+                const partialDescription = incident.description
+                    ? incident.description.split(" ").slice(0, 10).join(" ") + "..."
+                    : "No description";
+
+                mainRow.innerHTML = `
                     <td>${incident.incidentNumber}</td>
                     <td>${incident.title}</td>
-                    <td>${incident.description}</td>
+                    <td>${partialDescription}</td>
                     <td>${incident.status}</td>
+                    <td class="text-end">
+                        <button class="btn btn-primary btn-sm" onclick="toggleUserIncidentDetails(${index})">▼</button>
+                    </td>
                 `;
-                tableBody.appendChild(row);
+                tableBody.appendChild(mainRow);
+
+                // Detail row (initially hidden)
+                const detailRow = document.createElement("tr");
+                detailRow.id = `userIncidentDetails-${index}`;
+                detailRow.style.display = "none";
+
+                const assignedAdmin = incident.assignedAdmin?.username || "Unassigned";
+                const assignedTeam = incident.assignedTeam?.name || "Unassigned";
+
+                const detailCell = document.createElement("td");
+                detailCell.colSpan = 5;
+                detailCell.innerHTML = `
+                    <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; text-align: left;">
+                        <p><strong>Full Description:</strong> ${incident.description || "No description"}</p>
+                        <p><strong>Assigned Admin:</strong> ${assignedAdmin}</p>
+                        <p><strong>Assigned Team:</strong> ${assignedTeam}</p>
+                    </div>
+                `;
+                detailRow.appendChild(detailCell);
+
+                tableBody.appendChild(detailRow);
             });
         })
         .catch(error => console.error("Error fetching user incidents:", error));
 }
 
-// ✅ Fetch and display incidents for the admin dashboard
+
+// Toggle details function for the user’s incidents
+function toggleUserIncidentDetails(index) {
+    const detailRow = document.getElementById(`userIncidentDetails-${index}`);
+    detailRow.style.display = (detailRow.style.display === "none") ? "table-row" : "none";
+}
+
+// Fetch and display incidents for the admin dashboard
 function checkAdminDashboard() {
     const tableBody = document.querySelector("#admin-incidents-table");
 
-    if (!tableBody) return; // ✅ Don't execute if not on the admin page
+    if (!tableBody) return; //  Don't execute if not on the admin page
 
     fetch(adminIncidentsUrl, { credentials: "include" })
         .then(response => response.json())
         .then(data => {
-            console.log("Fetched Admin Incidents:", data); // ✅ Debugging output
-            tableBody.innerHTML = ""; // ✅ Clear previous incidents
+            console.log("Fetched Admin Incidents:", data); //  Debugging output
+            tableBody.innerHTML = ""; //  Clear previous incidents
 
             data.forEach(incident => {
                 const row = document.createElement("tr");
@@ -87,42 +110,118 @@ function checkAdminDashboard() {
         .catch(error => console.error("Error fetching admin incidents:", error));
 }
 
-// ✅ Submit a new incident (Includes createdBy)
+// Function to show success modal
+function showSuccessModal() {
+    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+    successModal.show();
+}
+
+//  Submit a new incident with inline validation
 document.getElementById("incident-form").addEventListener("submit", function (event) {
-    event.preventDefault(); // ✅ Prevent page refresh
+    event.preventDefault(); // Prevent immediate form submission
 
-    fetch("http://localhost:8080/api/users/role", { credentials: "include" })
-        .then(response => response.json())
-        .then(userData => {
-            const createdBy = userData.username; // ✅ Get logged-in user's username
+    const title = document.getElementById("title");
+    const description = document.getElementById("description");
+    const severityLevel = document.getElementById("status");
 
-            const newIncident = {
-                title: document.getElementById("title").value,
-                description: document.getElementById("description").value,
-                severityLevel: document.getElementById("status").value,
-                createdBy: createdBy // ✅ Include 'createdBy' in the request
-            };
+    let valid = true;
 
-            fetch("http://localhost:8080/api/incidents", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newIncident),
-            })
-                .then(response => {
-                    if (response.ok) {
-                        alert("Incident created successfully!");
-                        getUserIncidents(); // ✅ Refresh the list on the index page
-                        checkAdminDashboard(); // ✅ Refresh the admin dashboard
-                        document.getElementById("incident-form").reset(); // ✅ Clear form
-                    } else {
-                        response.text().then(text => alert("Error creating incident: " + text));
-                    }
+    //  Validate Title (Min 20 Characters)
+    if (title.value.trim().length < 20) {
+        title.classList.add("is-invalid");
+        valid = false;
+    } else {
+        title.classList.remove("is-invalid");
+        title.classList.add("is-valid");
+    }
+
+    //  Validate Description (Min 50 Characters, No Keyboard Mashing)
+    if (description.value.trim().length < 50 || isKeyboardMashing(description.value.trim())) {
+        description.classList.add("is-invalid");
+        valid = false;
+    } else {
+        description.classList.remove("is-invalid");
+        description.classList.add("is-valid");
+    }
+
+    //  Validate Severity Level Selection
+    if (!severityLevel.value) {
+        severityLevel.classList.add("is-invalid");
+        valid = false;
+    } else {
+        severityLevel.classList.remove("is-invalid");
+        severityLevel.classList.add("is-valid");
+    }
+
+    // If validation fails, stop submission
+    if (!valid) return;
+
+    //  Show confirmation modal before final submission
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmSubmitModal'));
+    confirmModal.show();
+
+    document.getElementById("confirmSubmitBtn").onclick = function () {
+        confirmModal.hide(); // Close modal
+
+        fetch("http://localhost:8080/api/users/role", { credentials: "include" })
+            .then(response => response.json())
+            .then(userData => {
+                const createdBy = userData.username;
+
+                const newIncident = {
+                    title: title.value.trim(),
+                    description: description.value.trim(),
+                    severityLevel: severityLevel.value,
+                    createdBy: createdBy
+                };
+
+                fetch(apiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newIncident),
                 })
-                .catch(error => console.error("Error creating incident:", error));
-        });
+                    .then(response => {
+                        if (response.ok) {
+                            showSuccessModal(); //  Show success modal
+                            getUserIncidents(); //  Refresh incidents list
+                            checkAdminDashboard(); //  Refresh admin dashboard
+                            document.getElementById("incident-form").reset(); //  Clear form
+
+                            // Reset validation styles
+                            title.classList.remove("is-valid");
+                            description.classList.remove("is-valid");
+                            severityLevel.classList.remove("is-valid");
+                        } else {
+                            response.text().then(text => alert("Error creating incident: " + text));
+                        }
+                    })
+                    .catch(error => console.error("Error creating incident:", error));
+            });
+    };
 });
 
-// ✅ Similarity Search
+//  Function to detect keyboard mashing
+function isKeyboardMashing(text) {
+    const lowerText = text.toLowerCase();
+
+    //  Check for repetitive characters (e.g., "aaaaaa", "qqqqqqq")
+    if (/(.)\1{6,}/.test(lowerText)) return true;
+
+    //  Check if there are more than 50% non-alphabetic characters
+    const nonAlphaCount = (lowerText.match(/[^a-z\s]/g) || []).length;
+    if (nonAlphaCount > text.length * 0.5) return true;
+
+    //  Check for repeated patterns (e.g., "qwertyqwerty")
+    const patterns = ["asdf", "qwert", "1234", "0000", "1111", "9999", "abcdef"];
+    for (const pattern of patterns) {
+        const regex = new RegExp(`(${pattern}){2,}`, "i");
+        if (regex.test(lowerText)) return true;
+    }
+
+    return false;
+}
+
+//  Similarity Search
 function searchSimilarIncidents() {
     const incidentNumber = document.getElementById("searchQuery").value;
 
@@ -144,7 +243,7 @@ function searchSimilarIncidents() {
         .catch(error => console.error("Error fetching similar incidents:", error));
 }
 
-// ✅ Delete an incident (Admin Only)
+//  Delete an incident (Admin Only)
 function deleteIncident(id) {
     fetch(`${apiUrl}/${id}`, {
         method: "DELETE",
@@ -153,7 +252,7 @@ function deleteIncident(id) {
         .then(response => {
             if (response.ok) {
                 alert("Incident deleted successfully!");
-                checkAdminDashboard(); // ✅ Refresh admin dashboard
+                checkAdminDashboard(); //  Refresh admin dashboard
             } else {
                 alert("Error deleting incident!");
             }
@@ -161,7 +260,7 @@ function deleteIncident(id) {
         .catch(error => console.error("Error deleting incident:", error));
 }
 
-// ✅ Update Incident Severity (Admin Only)
+//  Update Incident Severity (Admin Only)
 function updateSeverity(id, severityLevel) {
     fetch(`${apiUrl}/${id}/severity`, {
         method: "PUT",
@@ -173,7 +272,7 @@ function updateSeverity(id, severityLevel) {
         .catch(error => console.error(error));
 }
 
-// ✅ Update Incident Status (Admin Only)
+//  Update Incident Status (Admin Only)
 function updateStatus(id, status) {
     fetch(`${apiUrl}/${id}/status`, {
         method: "PUT",
@@ -185,7 +284,7 @@ function updateStatus(id, status) {
         .catch(error => console.error(error));
 }
 
-// ✅ Validate Admin Access
+//  Validate Admin Access
 function validateAdminAccess() {
     fetch("http://localhost:8080/api/users/role", { credentials: "include" })
         .then(response => response.json())
@@ -199,9 +298,14 @@ function validateAdminAccess() {
         .catch(error => console.error("Error fetching user role:", error));
 }
 
-// ✅ Logout Functionality
+//  Logout Functionality
 document.getElementById("logoutButton").addEventListener("click", function () {
     fetch("/perform_logout", { method: "POST", credentials: "same-origin" })
         .then(() => { window.location.href = "/login"; })
         .catch(error => console.error("Error logging out:", error));
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    getUserIncidents(); //  Load user-specific incidents after login
+    checkAdminDashboard(); //  Load admin dashboard if applicable
 });

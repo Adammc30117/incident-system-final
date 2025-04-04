@@ -1,8 +1,18 @@
 package com.example.demo.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+/**
+ * Entity representing an incident submitted by a user.
+ * Stores details such as title, description, status, severity level,
+ * assignment info, resolution, and creation metadata.
+ */
 @Entity
 public class Incident {
 
@@ -10,41 +20,61 @@ public class Incident {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Unique identifier for the incident, e.g., INCXXXXXXX */
     @Column(nullable = false, unique = true)
     private String incidentNumber;
 
+    /** Short title describing the incident */
     @Column(nullable = false)
     private String title;
 
+    /** Detailed description of the issue */
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    /** Explanation of how the issue was resolved */
     @Column(columnDefinition = "TEXT")
-    private String resolution;  // Details of how it was resolved
+    private String resolution;
 
+    /** Current status of the incident (e.g., Open, Resolved) */
+    private String status = "Open";
 
-    private String status = "Open"; // ✅ Default to "Open"
+    /** Severity level of the incident (e.g., Low, Medium, High) */
+    private String severityLevel = "Low";
 
-    private String severityLevel = "Low"; // ✅ Default to "Low"
-
+    /** Username of the user who submitted the incident */
     @Column(nullable = false)
-    private String createdBy; // Tracks the user who created the incident
+    private String createdBy;
 
+    /** List of comments associated with the incident */
+    @OneToMany(mappedBy = "incident", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IncidentComment> comments = new ArrayList<>();
+
+    /** Team assigned to the incident */
     @ManyToOne
     @JoinColumn(name = "assigned_team_id")
-    private Team assignedTeam; // Reference to Team
+    private Team assignedTeam;
 
+    /** Admin user assigned to handle the incident */
     @ManyToOne
     @JoinColumn(name = "assigned_admin_id")
-    private User assignedAdmin; // Reference to User (Admin)
+    private User assignedAdmin;
 
-    // Constructor
+    /** Timestamp marking when the incident was created */
+    @Column(name = "created_at", updatable = false, nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreationTimestamp
+    private Date createdAt;
+
+    /**
+     * Default constructor that auto-generates a unique incident number.
+     */
     public Incident() {
-        // Automatically generate a unique incident number
         this.incidentNumber = "INC" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     // Getters and Setters
+
     public Long getId() {
         return id;
     }
@@ -101,7 +131,6 @@ public class Incident {
         this.severityLevel = severityLevel;
     }
 
-
     public Team getAssignedTeam() {
         return assignedTeam;
     }
@@ -124,5 +153,13 @@ public class Incident {
 
     public void setResolution(String resolution) {
         this.resolution = resolution;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

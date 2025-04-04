@@ -169,4 +169,91 @@ nav a:hover {
     overflow-wrap: break-word;   /* modern property for wrapping long words */
 }
 
+/* Center pagination controls properly */
+#pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    gap: 5px; /* Adds spacing between buttons */
+}
 
+/* Pagination buttons */
+.pagination-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px; /* Slightly smaller for a neater look */
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    min-width: 35px; /* Ensures all buttons have uniform size */
+    text-align: center;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+    font-weight: bold;
+}
+
+/* Active page button */
+.pagination-btn.active {
+    background-color: #0056b3;
+    font-weight: bold;
+    border: 2px solid #003d82;
+}
+
+/* Hover effect */
+.pagination-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Make previous/next buttons smaller and visually distinct */
+#prevPage, #nextPage {
+    font-size: 14px;
+    padding: 6px 14px;
+    min-width: 70px;
+    background-color: #0056b3;
+    font-weight: bold;
+}
+
+/* Fix button alignment issues */
+#prevPage:disabled,
+#nextPage:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Expand button styling */
+.btn-expand {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Expand button hover */
+.btn-expand:hover {
+    background-color: #5a6268;
+}
+
+/* Ensure proper spacing between pagination and table */
+.container.mt-4 {
+    padding-bottom: 15px;
+}
+
+/* Adjust table row padding */
+.table td {
+    padding: 12px 10px;
+    vertical-align: middle;
+}
+
+/* Make buttons inside the table a bit more aligned */
+.text-end .btn-expand {
+    margin: 0px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

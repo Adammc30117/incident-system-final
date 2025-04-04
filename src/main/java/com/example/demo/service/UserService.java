@@ -8,7 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+/**
+ * UserService.java
+ *
+ * This service handles core logic for user creation and role management.
+ * It supports encoding passwords, assigning teams for admin users,
+ * and retrieving user roles for authorization purposes.
+ */
 
 @Service
 public class UserService {
@@ -22,7 +28,13 @@ public class UserService {
     @Autowired
     private TeamRepository teamRepository;
 
-    // ✅ Create a new user
+    /**
+     * Creates a new user. Assigns default role if not provided,
+     * hashes the password, and links the user to a team if they are an admin.
+     *
+     * @param user the User object to be created
+     * @return status message
+     */
     public String createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             return "Username already exists";
@@ -33,7 +45,7 @@ public class UserService {
         }
 
         if (user.getRole().equals("ROLE_ADMIN")) {
-            // Only admins can be assigned to a team
+            // Only admins should be linked to a team
             Team team = teamRepository.findByName(user.getTeam().getName())
                     .orElseThrow(() -> new RuntimeException("Team not found"));
             user.setTeam(team);
@@ -44,7 +56,12 @@ public class UserService {
         return "User created successfully!";
     }
 
-    // ✅ Get the role of the logged-in user
+    /**
+     * Retrieves the role for the specified username.
+     *
+     * @param username the logged-in user's username
+     * @return the user's role or a not found message
+     */
     public String getUserRole(String username) {
         User user = userRepository.findByUsername(username);
         if (user == null) {

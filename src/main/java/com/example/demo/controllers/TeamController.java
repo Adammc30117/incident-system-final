@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller responsible for managing team-related operations.
+ */
 @RestController
 @RequestMapping("/api/teams")
 public class TeamController {
@@ -14,7 +17,12 @@ public class TeamController {
     @Autowired
     private TeamService teamService;
 
-    // ✅ Create a new team (delegating logic to TeamService)
+    /**
+     * Creates a new team entity.
+     *
+     * @param team Team details provided in the request body.
+     * @return Response indicating success or failure of team creation.
+     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> createTeam(@RequestBody Team team) {
