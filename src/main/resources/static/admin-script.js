@@ -474,7 +474,6 @@ function searchIncidentByNumber() {
             const tableBody = document.querySelector("#admin-incidents-table");
             tableBody.innerHTML = "";  // Clear the table before showing results
 
-            // Show alert if no incidents match the search
             if (data.length === 0) {
                 alert("No incidents found!");
                 return;
@@ -485,7 +484,7 @@ function searchIncidentByNumber() {
                 const isResolved = incident.status === "Resolved";
                 const disabledAttribute = isResolved ? "disabled" : "";
 
-                // Format the incident's createdAt field (e.g., "March 21st, 14:30")
+                // Format createdAt date
                 const createdAtFormatted = incident.createdAt
                     ? new Date(incident.createdAt).toLocaleString("en-US", {
                         month: "long",
@@ -496,52 +495,48 @@ function searchIncidentByNumber() {
                     })
                     : "Unknown";
 
-                // Build the main row for the incident (collapsed view)
+                // Summary row
                 const row = document.createElement("tr");
                 row.innerHTML = `
                     <td>${incident.incidentNumber}</td>
                     <td>${incident.title}</td>
                     <td>${incident.description.split(" ").slice(0, 10).join(" ")}...</td>
                     <td><strong>${incident.status}</strong></td>
-                    <td>${createdAtFormatted}</td> <!-- ✅ New Column -->
+                    <td>${createdAtFormatted}</td>
                     <td class="text-end">
-                        <button class="btn btn-secondary btn-sm incident-expand-btn" onclick="toggleDetails(${rowIndex})">▼</button>
+                        <button class="btn btn-secondary btn-sm incident-expand-btn" onclick="toggleDetails(${index})">▼</button>
                     </td>
                 `;
-
                 tableBody.appendChild(row);
 
-                // Build the expandable detail row for the incident
+                // Detail row
                 const detailRow = document.createElement("tr");
                 detailRow.id = `details-${index}`;
                 detailRow.style.display = "none";
                 detailRow.innerHTML = `
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="incident-details">
                             <p><strong>Description:</strong> ${incident.description}</p>
                             <p><strong>Submitted:</strong> ${createdAtFormatted}</p>
                             <p><strong>Submitted By:</strong> ${incident.createdBy}</p>
 
-                            <!-- Severity selector -->
                             <label><strong>Severity:</strong></label>
-                            <select class="form-select w-50 d-inline-block" ${disabledAttribute} 
+                            <select class="form-select w-50 d-inline-block" ${disabledAttribute}
                                     onchange="updateSeverity(${incident.id}, this.value)">
                                 <option value="Low" ${incident.severityLevel === "Low" ? "selected" : ""}>Low</option>
                                 <option value="Medium" ${incident.severityLevel === "Medium" ? "selected" : ""}>Medium</option>
                                 <option value="High" ${incident.severityLevel === "High" ? "selected" : ""}>High</option>
                             </select>
 
-                            <!-- Status selector -->
                             <label><strong>Status:</strong></label>
-                            <select class="form-select w-50 d-inline-block" ${disabledAttribute} 
+                            <select class="form-select w-50 d-inline-block" ${disabledAttribute}
                                     onchange="updateStatus(${incident.id}, this.value)">
                                 <option value="Open" ${incident.status === "Open" ? "selected" : ""}>Open</option>
                                 <option value="Ongoing" ${incident.status === "Ongoing" ? "selected" : ""}>Ongoing</option>
                             </select>
 
-                            <!-- Assigned Team selector -->
                             <label><strong>Assigned Team:</strong></label>
-                            <select class="form-select w-50 d-inline-block" ${disabledAttribute} 
+                            <select class="form-select w-50 d-inline-block" ${disabledAttribute}
                                     onchange="updateAssignedTeam(${incident.id}, this.value)">
                                 <option value="Unassigned">Unassigned</option>
                                 <option value="1" ${incident.assignedTeam?.id === 1 ? "selected" : ""}>IT</option>
@@ -549,14 +544,12 @@ function searchIncidentByNumber() {
                                 <option value="4" ${incident.assignedTeam?.id === 4 ? "selected" : ""}>Support</option>
                             </select>
 
-                            <!-- Assigned Admin selector -->
                             <label><strong>Assigned Admin:</strong></label>
-                            <select id="admin-select-${incident.id}" class="form-select w-50 d-inline-block" ${disabledAttribute} 
+                            <select id="admin-select-${incident.id}" class="form-select w-50 d-inline-block" ${disabledAttribute}
                                     onchange="updateAssignedAdmin(${incident.id}, this.value)">
                                 <option value="Unassigned">Unassigned</option>
                             </select>
-                            
-                            <!-- Comments section -->
+
                             <div class="comment-section mt-3">
                                 <h6>Admin Notes</h6>
                                 <div id="comments-container-${incident.id}" class="bg-light p-2 mb-2 rounded" style="max-height: 200px; overflow-y: auto;"></div>
@@ -568,20 +561,18 @@ function searchIncidentByNumber() {
 
                             <br><br>
 
-                            <!-- Resolution or Resolve button -->
                             ${incident.status === "Resolved" && incident.resolution
                     ? `<button class="btn btn-info btn-sm w-50 mt-2"
-                                onclick="openResolutionDetailsModal('${incident.resolution.replace(/'/g, "\\'")}')">
-                                See Resolution Details
-                               </button>`
+                                           onclick="openResolutionDetailsModal('${incident.resolution.replace(/'/g, "\\'")}')">
+                                           See Resolution Details
+                                       </button>`
                     : `<button class="btn btn-success btn-sm w-50 mt-2"
-                                onclick="openResolveModal(${incident.id}); 
-                                         const modal = new bootstrap.Modal(document.getElementById('resolveModal'));
-                                         modal.show();">
-                                Resolve
-                               </button>`}
+                                           onclick="openResolveModal(${incident.id});
+                                                    const modal = new bootstrap.Modal(document.getElementById('resolveModal'));
+                                                    modal.show();">
+                                           Resolve
+                                       </button>`}
 
-                            <!-- Delete and Close buttons -->
                             <button class="btn btn-danger btn-sm w-50 mt-2" ${isResolved ? "disabled" : ""}
                                     onclick="confirmDeleteIncident(${incident.id})">
                                 Delete
@@ -593,10 +584,10 @@ function searchIncidentByNumber() {
                 `;
                 tableBody.appendChild(detailRow);
 
-                // Fetch and render the comments for this incident
+                // Load comments
                 fetchComments(incident.id);
 
-                // Load admin dropdown options if a team is already assigned
+                // Load admin options if a team is already assigned
                 if (incident.assignedTeam) {
                     loadAdminsForTeam(incident.id, incident.assignedTeam.id, isResolved, incident.assignedAdmin?.id);
                 }
@@ -607,6 +598,7 @@ function searchIncidentByNumber() {
             alert("Error searching incident. Please check console.");
         });
 }
+
 
 // Function to fetch and display all comments for a given incident
 function fetchComments(incidentId) {

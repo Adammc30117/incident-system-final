@@ -1,0 +1,458 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Apr 06, 2025 at 12:33 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.2.0
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `fyp_incident_system`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `incident`
+--
+
+CREATE TABLE `incident` (
+  `id` bigint(20) NOT NULL,
+  `description` text DEFAULT NULL,
+  `incident_number` varchar(255) NOT NULL,
+  `status` varchar(255) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `severity_level` varchar(255) DEFAULT NULL,
+  `assigned_admin_id` bigint(20) DEFAULT NULL,
+  `assigned_team_id` bigint(20) DEFAULT NULL,
+  `resolution` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `incident`
+--
+
+INSERT INTO `incident` (`id`, `description`, `incident_number`, `status`, `title`, `created_by`, `severity_level`, `assigned_admin_id`, `assigned_team_id`, `resolution`, `created_at`) VALUES
+(66, 'Several users in the marketing department have reported that their emails are not syncing correctly across devices. Emails sent from desktop clients are not appearing on mobile devices and vice versa. Initial diagnostics suggest an issue with the IMAP configuration or a possible conflict after the recent mail server update. Logs from Exchange should be reviewed to confirm the source of desynchronization and resolve any corrupted mail queue entries.', 'INC3C1BCBC9', 'Resolved', 'Email synchronization failure', 'admin', 'Low', 13, 1, 'Reconfigured IMAP settings and flushed the mail queues. Issue resolved after restarting the mail server.', '2025-04-03 09:52:23'),
+(67, 'Users attempting to log into the HR portal are being redirected to a blank page after entering credentials. This issue began after a system update over the weekend. Logs show a failure in session initialization and an error in the user authentication service. The development team should review backend login handlers and check for version conflicts in the new deployment.', 'INCFB29F538', 'Resolved', 'HR System login error', 'admin', 'Medium', 16, 3, 'Rolled back the last HR portal update. Restarted authentication services and confirmed normal login flow.', '2025-04-03 09:53:53'),
+(68, 'Employees have reported that the company intranet\'s search function is failing to return any results for valid queries. Indexing jobs appear to have failed after the last nightly backup, leading to an empty search index. Apache Solr logs indicate a critical error in the indexing pipeline.', 'INC2D4A0C35', 'Resolved', 'Intranet search not returning results', 'admin', 'Low', 13, 1, 'Restarted Solr service and manually triggered a full reindex of the site. Search functionality restored.', '2025-04-03 09:55:40'),
+(69, 'Support agents are unable to escalate tickets from Tier 1 to Tier 2. The \'Assign to Tier 2\' button throws a 500 internal server error. Logs point to a null pointer exception in the escalation module, possibly caused by missing user context after recent role management changes.', 'INC27024D40', 'Resolved', 'Support ticket escalation failure', 'admin', 'Low', 18, 4, 'Fixed null pointer exception in the escalation logic and deployed a patch.', '2025-04-03 09:57:49'),
+(70, 'The antivirus solution has begun flagging and quarantining legitimate in-house applications, including the finance team’s reporting tools. This started after the latest virus definition update. It appears the new signature database is incorrectly identifying custom-built software as malicious.', 'INCEAFAE5BA', 'Resolved', 'Antivirus quarantining signed applications', 'admin', 'Low', 13, 1, 'Whitelisted affected applications and reported false positives to the AV vendor.', '2025-04-03 09:58:42'),
+(71, 'The scheduled file transfer from the payroll system to the external banking partner failed due to a timeout error. Logs indicate the SFTP connection was dropped after 30 seconds. Investigation revealed a firewall change that blocked outbound traffic on port 22.', 'INC12B95265', 'Resolved', 'Payroll file transfer failing', 'admin', 'Low', NULL, NULL, 'Firewall rule updated to allow SFTP outbound to the banking partner’s IP range.', '2025-04-03 09:59:35'),
+(72, 'Support staff using the custom Chrome extension for the ticketing system report frequent browser crashes. The issue appears related to memory usage exceeding limits during long sessions. Dev tools point to an unclosed websocket connection.', 'INC40AF3FE4', 'Resolved', 'Chrome extension crash in ticketing system', 'admin', 'Low', 17, 4, 'Updated extension to close unused websocket connections. Stability confirmed.', '2025-04-03 10:00:25'),
+(73, 'Nightly data sync from the main server to the backup site is delayed by 4+ hours. Rsync logs show stalled connections and transfer retries. Root cause points to increased file sizes and an unoptimized sync schedule overlapping with peak usage hours.', 'INCC9732C53', 'Resolved', 'Data sync delay with backup systems', 'admin', 'Low', NULL, NULL, 'Rescheduled sync job to off-peak hours and enabled delta sync to reduce transfer load.', '2025-04-03 10:01:21'),
+(74, 'A newly onboarded employee is not showing up in the HR database, causing payroll and email provisioning delays. Investigation shows that the onboarding form was submitted, but an integration failure with the HR API prevented record creation.', 'INC9D5F6EA8', 'Resolved', 'New employee not appearing in HR database', 'admin', 'Low', 15, 3, 'Manually added employee details and restarted the integration service.', '2025-04-03 10:02:05'),
+(75, 'Graphs on the support dashboard (tickets by type, region, and age) fail to load. Browser console logs show 403 errors when fetching data from the analytics API. This is likely related to recent token expiration changes.', 'INC95652D70', 'Resolved', 'Support dashboard not loading graphs', 'admin', 'Low', NULL, 4, 'Updated the API token and increased expiration window. Graphs now rendering as expected.', '2025-04-03 10:03:11'),
+(76, 'Multiple users reported that uploading attachments to emails via Outlook Web Access (OWA) times out after about 30 seconds. This issue occurs only when using the internal office network. Affected users note that the issue persists across different browsers. Preliminary checks showed that upload speeds within the network fluctuate significantly during office peak hours.', 'INC1442EF88', 'Resolved', 'Email server timeout during attachment upload', 'admin', 'Medium', 13, 1, 'Network logs identified a bottleneck in switch port 7 on Floor 2, which was saturating bandwidth during peak times. IT replaced the faulty switch and optimized the firewall\'s QoS settings. Issue resolved after confirming stable uploads.', '2025-04-03 11:03:49'),
+(77, 'A customer from the finance team reported that they could not access their client portal account. Attempts to reset the password failed with an error message saying \"user not recognized.\" Further testing indicated this only affects users whose usernames contain special characters like \"&\" and \"+\".', 'INC6B57F054', 'Resolved', 'Customer unable to log into web portal', 'admin', 'Low', 17, 4, 'The support team discovered that a recent update to input validation logic caused certain usernames to be rejected incorrectly. A patch was deployed to correct this logic, and affected accounts were tested successfully.', '2025-04-03 11:04:55'),
+(78, 'Several employees reported receiving a \"403 Forbidden\" error when attempting to access the performance review section of the HR portal. This only affected employees hired after January 2024. Initial inspection revealed missing role assignments in their user profiles.', 'INC1D2CCC6F', 'Resolved', 'Staff unable to access performance review system', 'admin', 'Low', NULL, NULL, 'HR worked with IT to update the access control list (ACL) and ensured new employees were correctly added to the “reviewee” group in Active Directory. Issue resolved for all 22 affected users.', '2025-04-03 11:05:53'),
+(79, 'All teams reported that they were no longer receiving Slack notifications for system alerts since yesterday morning. The issue affected both mobile and desktop apps, regardless of operating system. Investigation revealed that the webhook URL used by the monitoring tool was returning HTTP 410 (Gone) errors.', 'INC2CB0CA2A', 'Resolved', 'System-wide Slack notifications not received', 'admin', 'Medium', 14, 1, 'Monitoring integration was reconfigured with a new webhook token. Alert tests were performed successfully, and notification flow resumed.', '2025-04-03 11:06:36'),
+(81, 'Dozens of staff submitted support tickets after encountering a vague error message: \"Input not accepted - try again\" while submitting expenses. This happened when users accidentally left the \"receipt amount\" field blank. The error didn’t clearly indicate what was wrong.', 'INCE3BBD655', 'Resolved', 'Users confused by error message in expense system', 'admin', 'Low', 17, 4, 'Support escalated the issue to the dev team. They updated the frontend validation to explicitly highlight the blank field and show a user-friendly message: “Please enter the receipt amount before continuing.”', '2025-04-03 11:10:47'),
+(82, 'A newly onboarded employee reported being unable to access the HR portal for over 48 hours. The issue includes missing credentials for the internal benefits system and lack of access to required training modules. Attempts to reset the password led to error messages citing “user not found.” The user was listed in the onboarding sheet, but may have been omitted during the provisioning sync. This issue delayed the employee’s start and onboarding process significantly, potentially violating internal SLA timelines.', 'INC763ADE9C', 'Resolved', 'New Employee Unable to Access HR Portal', 'admin', 'Medium', 15, 3, 'The employee’s account was found missing in the Active Directory sync process. IT was contacted to manually provision the user. Credentials were issued, training access was verified, and onboarding resumed successfully. HR system logs were reviewed to ensure this sync error does not recur.', '2025-04-03 11:13:51'),
+(83, 'A permanent staff member reported that their salary was not processed for the month of February. Upon review, HR could not find the employee\'s name on the submitted payroll batch. The employee had returned from maternity leave recently and was confirmed to be active in both the attendance and time-tracking systems. HR verified that the employee was marked as returned in Workday but the status was not reflected in the export to the payroll processing system.', 'INC82CE5228', 'Resolved', 'Employee Missing from Monthly Payroll', 'admin', 'Low', 15, 3, 'The employee was manually added to the payroll batch and payment was expedited. A process check revealed a lag in the status update sync between HR and Finance systems. HR has now implemented a validation step to cross-check returnees before exporting monthly payroll.', '2025-04-03 11:14:36'),
+(84, 'A compliance audit flagged that over 20 staff members have not digitally acknowledged the latest workplace harassment policy. The policy was published and emailed, but no tracking mechanism was enabled. Staff claim they received no follow-up reminders or clear instruction on how to complete the digital acknowledgment. Lack of acknowledgment poses risk for legal non-compliance.', 'INC825598DC', 'Resolved', 'Mandatory Policy Not Acknowledged by Staff', 'admin', 'Low', 16, 3, 'HR added tracking and digital acknowledgment through the LMS. Staff were re-notified via email with step-by-step instructions. The acknowledgment rate went from 62% to 100% within 3 days. Future policies will be tracked using the LMS exclusively.', '2025-04-03 11:15:22'),
+(85, 'An employee raised a ticket indicating their annual leave balance was off by 4 days. Upon checking, HR found that the issue was isolated to users who transitioned from part-time to full-time during the mid-year adjustment. The system had not recalculated leave entitlements based on the updated contract status, resulting in underreported leave days.', 'INC9C87B517', 'Resolved', 'Annual Leave Showing Incorrect Days', 'admin', 'Low', 15, 3, 'The affected user’s profile was corrected manually and full leave was restored. A wider check revealed 3 more users with the same issue. A script has been deployed to recalculate leave based on employment status changes.', '2025-04-03 11:15:59'),
+(86, 'The employee was immediately removed from duty until re-certified. Training was scheduled and completed within 48 hours. HR has now configured auto-alerts to trigger 30 days before expiry and notify both employees and line managers.', 'INC8E5571CA', 'Resolved', 'Expired Safety Certificate Not Flagged', 'admin', 'Low', 16, 3, 'The employee was immediately removed from duty until re-certified. Training was scheduled and completed within 48 hours. HR has now configured auto-alerts to trigger 30 days before expiry and notify both employees and line managers.', '2025-04-03 11:16:37'),
+(87, 'Several clients reported bounced emails when contacted from company addresses. Investigation showed that the organization’s email domain had been blacklisted on several spam filters due to repeated failed SPF/DKIM checks. This issue disrupted outbound communication and delayed multiple client responses.', 'INC5B00FF19', 'Resolved', 'Company Email Domain Blacklisted', 'admin', 'Low', 13, 1, 'IT updated the domain\'s SPF record and DKIM signature to align with new email server policies. Requested removal from 3 major blacklists and verified delivery through test sends. Issue resolved in 48 hours.', '2025-04-03 11:22:36'),
+(88, 'An automated software update deployment via SCCM failed across 70% of target workstations. Affected users experienced missing shortcuts, partial installs, and broken dependencies. This caused workflow disruptions especially in the Finance department relying on the application daily.', 'INC89382510', 'Resolved', 'Software Deployment Failure via SCCM', 'admin', 'Low', 14, 1, 'Identified that the SCCM deployment package was corrupted. Repackaged the software and created a phased deployment with proper rollback scripts. Validated successful installs via endpoint logs.', '2025-04-03 11:23:18'),
+(89, 'Multiple users were trapped in a password reset loop when accessing the internal HR portal. After resetting their password, the system would not accept the new credentials, redirecting back to the reset prompt. Affected users were unable to view payslips or leave balances.', 'INC0304C420', 'Resolved', 'Password Reset Loop on Portal Login', 'admin', 'Low', 13, 1, 'Identified misconfigured password hash comparison in the backend service. Corrected authentication logic and restarted the affected service. Verified login success for impacted users.', '2025-04-03 11:24:14'),
+(90, 'A key internal application failed to launch due to an expired SSL certificate. Users received a \"Connection not secure\" error and were unable to bypass the warning screen, halting reporting and time entry functionalities for over 200 employees.', 'INCAEDA467D', 'Resolved', 'Outdated Security Certificate Blocking App Launch', 'admin', 'Low', 13, 1, 'Renewed the certificate with the internal CA and updated the application’s configuration. Pushed updated cert to affected machines and verified successful launch.', '2025-04-03 11:25:01'),
+(91, 'Employees reported that their mapped network drives were not reconnecting after a system reboot. Manual re-mapping worked temporarily, but paths were lost again on logout. Scripts were previously used but no longer functioning post-Windows update.', 'INC4676C57B', 'Resolved', 'Shared Drive Mapping Failing After Reboot', 'admin', 'Low', 14, 1, 'Diagnosed a Group Policy issue introduced by the latest Windows patch. Rewrote the drive-mapping GPO to include persistent connections and bypass legacy scripts.', '2025-04-03 11:25:50'),
+(92, 'Several users in the main office reported that they were unable to connect to the company Wi-Fi since this morning. Devices showed \"Unable to obtain IP address\" errors. Restarting devices did not solve the issue. The issue appeared across multiple floors.', 'INC4FDFD07A', 'Resolved', 'Can\'t Connect to Company Wi-Fi', 'admin', 'Low', 17, 4, 'The DHCP server had stopped assigning IPs due to reaching its lease limit. Old entries were cleared and the server was restarted. Wi-Fi connectivity was restored for all users.', '2025-04-03 11:31:39'),
+(93, 'Staff tried to use the projector in the main conference room but the display remained blank. HDMI and VGA inputs were tested on multiple laptops. The projector power was on, but no image appeared.', 'INCEBE20476', 'Resolved', 'Projector not working in meeting room', 'admin', 'Low', 17, 4, 'The HDMI cable was faulty. It was replaced with a working one, and the display functioned correctly.', '2025-04-03 11:32:18'),
+(94, 'A staff member forgot their password and couldn’t access the internal portal. The reset link sent to their email expired before they could click it, and multiple attempts failed.', 'INC64F1BD94', 'Resolved', 'Forgotten password for company portal', 'admin', 'Low', 18, 4, 'Password reset email was resent with extended expiry time. User successfully updated credentials and regained access.', '2025-04-03 11:32:56'),
+(95, 'The laptop in office 2B was unable to send print jobs to the shared printer. The device appeared online, and no error was shown, but print jobs remained in the queue.', 'INC26280290', 'Resolved', 'Unable to print from office laptop', 'admin', 'Low', 17, 4, 'The local print spooler service was frozen. Restarting the service and clearing the print queue resolved the issue.', '2025-04-03 11:33:35'),
+(96, 'Multiple employees reported that their company email accounts stopped syncing on their smartphones. All devices showed \"unable to connect to server\" errors, but webmail was working fine.', 'INCCCF41E74', 'Resolved', 'Company email not syncing on mobile', 'admin', 'Low', 17, 4, 'A recent firewall rule blocked mobile email sync. Rule was updated, and devices resumed syncing normally.', '2025-04-03 11:35:28'),
+(97, 'The employee reported that their laptop cannot connect to the TUSNet Wi-Fi since this morning. They mentioned the network is visible but connecting results in an error saying \"Unable to connect to this network\". They tried restarting the device and toggling Wi-Fi on and off without success. The issue persists in multiple locations across the building. Other devices appear to be working normally.', 'INC660C21AC', 'Resolved', 'Cannot Connect to Office Wi-Fi on Laptop', 'admin', 'Low', 17, 4, 'The issue was traced to a corrupted Wi-Fi profile on the laptop. We removed the saved network and manually re-added TUSNet with correct enterprise settings. The user was able to connect successfully afterward.', '2025-04-03 11:38:27'),
+(98, 'A staff member in Finance has reported intermittent Wi-Fi disconnections on their Dell laptop. The issue has been happening all week — the laptop disconnects randomly and won’t reconnect for several minutes. The user has tried restarting, and the issue happens in both Meeting Room B and the main office. No other employees in that area are having similar issues.', 'INC035B2F6D', 'Resolved', 'Staff Laptop Drops Wi-Fi Constantly', 'admin', 'Low', 18, 4, 'Updating the Wi-Fi driver resolved the disconnection issue. We also changed the wireless channel on the router covering that zone to reduce interference. No further drops have been reported.', '2025-04-03 11:39:11'),
+(99, 'A new hire cannot join the company Wi-Fi from their Windows laptop. When attempting to connect to the “TUSNet” network, the system displays a login screen but authentication fails despite entering the correct domain credentials. The user was able to log in on another laptop using the same credentials, so this appears isolated to the device. Issue was first reported Monday morning.', 'INC67501913', 'Resolved', 'Employee Unable to Join Wi-Fi — Authentication Error', 'admin', 'Low', 17, 4, 'The device was missing the wireless access policy due to incorrect domain group placement. After moving the machine into the correct AD group and forcing a policy refresh, Wi-Fi login succeeded.', '2025-04-03 11:39:51'),
+(100, 'Several employees have reported that their outgoing emails to clients using Gmail and Yahoo are bouncing back with error messages. The messages state that the recipient servers cannot be reached. This started happening this morning after a scheduled DNS configuration update. The issue appears to be isolated to emails sent outside the organization. Internal emails are unaffected, and the mail server dashboard shows elevated outbound delivery failure rates.', 'INC6023E785', 'Resolved', 'Email Delivery Failure to External Recipients', 'admin', 'Medium', 17, 4, 'The issue was traced to a misconfigured DNS record introduced during a recent update. The MX and SPF records were corrected, allowing external email flow to resume as normal.', '2025-04-03 12:22:18'),
+(101, 'Users in multiple departments have complained that emails sent to addresses outside our organization are not being delivered. This includes popular domains like Gmail, Outlook, and AOL. The problem began around 9:00 AM and affects everyone using the main email gateway. IT has confirmed that there were changes made to the DNS settings last night, which might be impacting email resolution. Internal email communication still works fine.', 'INC04BFF076', 'Resolved', 'External Email Not Going Through', 'admin', 'Low', 18, 4, 'Reverted the recent DNS changes that conflicted with email routing. Validated the MX and SPF entries and restarted the mail services. External emails now send without issue.', '2025-04-03 12:23:00'),
+(102, 'Today, many employees noticed they can’t send emails to people outside the organization. The emails seem to sit in the outbox or get returned as undeliverable. Recipients using Gmail and Outlook accounts are the most commonly affected. We suspect the outgoing mail server or DNS records may be misconfigured. This started shortly after a change to the DNS panel, which was meant to clean up old entries.', 'INC507EC64C', 'Resolved', 'Unable to Send Emails Outside the Company', 'admin', 'Low', 17, 4, 'Identified a malformed SPF entry in the DNS zone. After correcting it and clearing the server cache, outbound emails began processing as expected.', '2025-04-03 12:23:13'),
+(103, 'I expected to receive my March payslip via email last week as usual, but nothing arrived. I’ve double-checked my inbox and spam folder and found no trace of it. This has made it difficult to verify my deductions and confirm my salary details for this month. Other colleagues in my department have received theirs without issue. I rely on this document for financial planning and would appreciate a prompt resolution.', 'INC197BFE48', 'Resolved', 'Payslip not received for March', 'admin', 'Low', 15, 3, 'March’s payslips were sent on schedule, but this user was accidentally omitted due to an internal sync error during the export process. We reran the batch specifically for the affected employees and delivered the March payslip directly to the user’s verified email.', '2025-04-03 12:34:10'),
+(104, 'I usually receive a digital version of my payment statement by the end of the first week each month. However, I didn’t receive it this time. I’ve checked both my official inbox and junk folder multiple times. I need the payslip to process a rent verification form with my landlord. Please assist in retrieving or resending the statement as soon as possible.', 'INCB0FD3F65', 'Resolved', 'Missing payment statement', 'admin', 'Low', 16, 3, 'The user’s payment statement was held in the system due to an incomplete email update in their HR profile. We corrected the email address on file and resent the digital statement through the payroll system. The user has confirmed successful receipt.', '2025-04-03 12:34:21'),
+(105, 'I still haven’t received my salary slip for this month. Normally, it arrives on the 5th via our internal HR mailing system. I depend on it for expense tracking and reimbursement processes. Others in my department got theirs already, so I’m unsure why mine is missing. Could this be a system issue?', 'INC8FF9D700', 'Resolved', 'Didn’t get this month’s salary slip', 'admin', 'Low', 15, 3, 'The user’s payroll email was marked as spam by their email client, causing it to be missed. We advised the user to check their junk folder and whitelist the payroll address. A duplicate payslip was manually reissued via the HR portal and confirmed received by the user.', '2025-04-03 12:34:33'),
+(106, 'I’ve been trying to work remotely all morning, but the VPN connection keeps dropping every few minutes. I can log in initially, but the connection becomes unstable shortly after. It’s really frustrating because I keep getting kicked out of our internal tools and have to reconnect constantly. This has been happening since around 8am today and I’ve restarted my laptop multiple times, but the issue persists. I need a stable connection to access company systems securely while working from home.', 'INCD1675E5F', 'Resolved', 'VPN Keeps Disconnecting Every Few Minutes', 'admin', 'Low', NULL, NULL, 'The issue was caused by an outdated VPN client version on the user’s device. We updated the software to the latest version and reset the VPN profile. The connection is now stable with no further drops reported.', '2025-04-05 12:44:34'),
+(107, 'Since early this morning, I’ve been having issues staying connected to the VPN while working from home. It connects successfully at first, but then drops randomly every 5–10 minutes, interrupting my access to internal platforms. I’ve tried restarting my machine, switching networks, and even reinstalling the client, but nothing seems to fix the problem. This is severely affecting my productivity because I keep losing access to shared drives and systems.', 'INC5C8BE4DE', 'Resolved', 'Unable to Maintain a Stable VPN Connection', 'admin', 'Low', 13, 1, 'Reinstalled and updated the VPN client to the latest stable build. Also refreshed the user’s credentials and cleared cached sessions. The user confirmed everything is working fine after the update.', '2025-04-05 12:44:50'),
+(108, 'I’ve been having trouble staying connected to our company VPN today. It connects at first without issue, but then my remote access cuts out repeatedly — it’s as if the VPN connection times out after a few minutes. This started happening this morning and has made it really difficult to stay logged in to essential work apps and systems. I already rebooted my computer and checked my home internet, which seems fine. I suspect it’s something with the VPN client or authentication.', 'INC80739E37', 'Resolved', 'Remote Access Drops Frequently While Connected to VPN', 'admin', 'Low', 14, 1, 'The disconnections were due to a misconfigured VPN profile and a version mismatch. After reinstalling the client and updating the configuration files, the connection stabilized and the user confirmed no further issues.', '2025-04-05 12:45:03'),
+(109, 'I tried logging into my company account this morning but never received the 2FA code on my phone. I waited for over 10 minutes and even requested it multiple times, but nothing came through. My signal is fine, and I was able to receive regular SMS texts from others. I’m completely locked out of my account and can’t access my work tools or email because of this.', 'INC40D0516C', 'Resolved', '2FA Code Not Arriving During Login Attempt', 'admin', 'Medium', 13, 1, 'The issue was related to a third-party SMS delivery delay. We updated the user’s 2FA method to use email verification for the time being and also synced the device time. Login was successful after the change, and the user has full access now.', '2025-04-05 12:52:31'),
+(110, 'I’m locked out of my account because I’m not getting the two-factor authentication code. I’ve tried multiple times to log in and resend the code, but nothing is coming to my phone. I restarted my phone, checked my signal, and even tried logging in from a different device, but still no luck. This is blocking me from accessing email, documents, and internal tools.', 'INC00D4730B', 'Resolved', 'Unable to Log In – 2FA Code Never Arrives', 'admin', 'Medium', 14, 1, '2FA SMS messages were not being delivered due to a delay from the SMS provider. We temporarily switched the user to email-based authentication and guided them through a successful login. Full access restored.', '2025-04-05 12:52:46'),
+(111, 'I can’t log into my work account because I’m not receiving the text message with the 2FA verification code. I’ve tried resending the code several times, waited, and even restarted my phone. Other text messages are working fine, so I don’t think it’s my device. This has happened before, but it usually fixes itself — this time, it’s been over an hour and I still can’t get in.', 'INC7C57C7C0', 'Resolved', 'Locked Out – 2FA Text Code Never Received', 'admin', 'Medium', 13, 1, 'Due to ongoing issues with the SMS provider, we switched the user to app-based authentication. After setup, the user was able to log in without issues. Access has been fully restored, and backup codes were provided for future use.', '2025-04-05 12:53:01'),
+(112, 'I’ve been trying to access the HR shared folder on the network since yesterday, but I keep receiving a message that says I don’t have permission to view the contents. I’ve checked that I’m connected to the network properly, and I’ve tried accessing it from both my work laptop and a desktop in the office, but the result is the same each time. It just shows an “Access Denied” error. I confirmed with a colleague that they can open the folder without any issues, so it seems like a problem with my access specifically. This folder contains important payroll forms and internal HR documents I need to process monthly reports, so I’d appreciate if someone could look into it urgently.', 'INCA3FCE13C', 'Resolved', 'Can’t Access HR Shared Folder', 'admin', 'High', 13, 1, 'The user was missing from the designated access group required for the HR shared folder. Their account was added to the appropriate AD group, and they were instructed to log out and back in. Upon doing so, access to the folder was confirmed as working', '2025-04-05 13:02:56'),
+(113, 'I need access to the HR department’s shared drive to retrieve files related to internal documentation and staff contracts. When I try to open the folder from my computer, I get a permissions error that says I’m not authorized to view its contents. I’m not sure if I ever had access or if it was removed at some point, but I definitely need it now for an upcoming internal audit. I’ve tried rebooting, logging out, and accessing the folder via the mapped network drive and directly by path, but the result is the same. I’d appreciate it if someone could check whether I have the correct permissions set up and grant access if necessary.', 'INCA3D08BA9', 'Resolved', 'Requesting Access to Department Drive', 'admin', 'Medium', 13, 1, 'The user’s role had not been mapped to the correct permission group for the department drive. Their access was granted manually via Active Directory, and they were able to open the folder successfully after logging back in.', '2025-04-05 13:03:08'),
+(114, 'I used to have access to the HR shared folder on our internal server, but recently I noticed that I can’t open it anymore. Every time I try, I get an “Access Denied” message, even though I’ve had no issues with this before. I’ve already restarted my computer, signed out and back into my account, and attempted to access the folder both through the mapped network drive and by typing the path directly — no change. I also checked with my colleagues, and they can still access the folder without any problems, so I suspect something has changed on my end. I need access restored as I frequently use that folder for handling onboarding files and employee records.', 'INC079FA408', 'Resolved', 'Shared HR Drive Not Available to Me', 'admin', 'Medium', 14, 1, 'The user’s access was removed unintentionally during a recent update to department group memberships. After confirming their continued need for access, they were re-added to the correct AD group. Access to the HR folder was immediately restored and confirmed with the user.', '2025-04-05 13:03:22'),
+(115, 'I submitted a leave request for two days off last week, which was approved by my manager, but my annual leave balance in the HR portal hasn’t changed. It still shows the full number of days as if I never took any time off. I expected it to automatically update once the leave was approved and processed, but it looks like the system hasn’t deducted those two days. I want to make sure my balance is accurate because I’m planning to request more time off soon and don’t want any issues.', 'INC7AEC1C32', 'Resolved', 'Annual Leave Balance Not Updated After Recent Request', 'admin', 'Medium', 15, 3, 'The leave request had been approved correctly, but due to a sync delay between the approval system and the HR leave balance module, the user’s balance did not update. We manually adjusted the balance to reflect the two approved days, and the system is now displaying the correct number of remaining leave days.', '2025-04-05 13:07:46'),
+(116, 'I took a few days off recently — the time off was approved and already taken — but when I check the HR system, it still shows that I have the full holiday allowance. It doesn’t look like the days I used have been deducted from my account. I’m not sure if this is just a delay or if something went wrong, but I want to make sure it’s showing the correct balance for future requests.', 'INCFDF7853A', 'Resolved', 'My Holiday Allowance Still Shows Full Balance', 'admin', 'Low', 15, 3, 'There was a delay in syncing the approved leave data with the holiday balance module in the HR system. The missing deduction has now been applied manually, and the correct balance is showing on the user’s profile.', '2025-04-05 13:07:59'),
+(117, 'I noticed that the annual leave days I recently took aren’t being reflected in my current balance. My manager approved the request and I already had the days off, but when I check the HR portal, it still shows my full entitlement as if I never took any leave. I rely on that number being accurate when planning future holidays, so I just want to make sure it’s being tracked properly.', 'INC1A64DA5C', 'Resolved', 'Approved Days Off Not Reflected in My Leave Balance', 'admin', 'Low', 16, 3, 'The discrepancy was caused by a delay in the system that updates leave balances after manager approval. We applied the necessary adjustment manually, and the user’s annual leave balance now accurately reflects their used days.', '2025-04-05 13:08:12'),
+(118, 'I’ve been trying to print several documents from the admin office printer, but it keeps giving me a \"paper jam\" message. I’ve checked all the trays, removed and reloaded the paper, and even powered the printer off and back on, but the issue won’t go away. I’ve also tried printing from different computers, and the same error shows up every time. It’s preventing anyone from printing anything in our section and has already caused delays with time-sensitive reports we need to submit.', 'INC8C8634BA', 'Resolved', 'Printer Keeps Saying Paper Jam Even After Reset', 'admin', 'Low', 17, 4, 'A small fragment of paper was stuck deep in the roller mechanism where it wasn’t visible during a basic tray check. We manually removed the debris and performed a full reset. The printer is now functioning normally and has been tested by staff.', '2025-04-05 13:23:52'),
+(119, 'The main office printer keeps displaying a jam error, but we’ve checked every tray and opening, and there’s no paper stuck inside. It refuses to print anything and just keeps flashing the same warning. We’ve restarted it several times and tried switching paper trays, but nothing is working. This started earlier today and has now impacted everyone trying to print. It’s urgent because we need to get materials printed for a meeting this afternoon.', 'INC3C991A2D', 'Resolved', 'Office Printer Shows Jam Error but No Paper Is Stuck', 'admin', 'Low', 18, 4, 'The issue was caused by a small torn piece of paper that was wedged near the internal rollers. It was carefully extracted, and the printer was reset to clear the jam error. Functionality confirmed after multiple successful test prints.', '2025-04-05 13:24:06'),
+(120, 'Our team can’t get the printer to work today because it keeps showing a paper jam error. We’ve opened up all accessible parts, cleared out the trays, and removed and replaced the paper, but the error won’t go away. I’ve restarted the device multiple times and tried using a different PC to print, but nothing’s coming through. It seems like something is stuck inside that we can’t see, and the device has basically been out of service since this morning.', 'INC104BA1F5', 'Resolved', 'Printing Blocked – Persistent Paper Jam Alert', 'admin', 'Low', 18, 4, 'A small piece of paper was jammed behind the roller mechanism and was not visible during routine checks. Once removed, the printer was restarted and returned to normal operation. Users have confirmed it is now printing without issues.', '2025-04-05 13:24:19'),
+(121, 'I’ve been trying to access the internal file server since this morning, but it keeps timing out. I usually connect through the network path we’ve been using for months (\\corp-fileserver\\departments), but today it says the location is unavailable. I’ve checked with two other people in the department and they’re seeing the same issue. I’ve restarted my computer, verified that I’m connected to the network, and even tried accessing the server through the mapped drive and manually typing the path — same result. This is blocking access to important shared documentation.', 'INC818E075A', 'Resolved', 'Can’t Connect to Internal File Server', 'admin', 'Medium', 13, 1, 'The internal file server experienced a temporary service failure. We restarted the necessary services and flushed DNS records. Access to the shared directories was restored across all affected users.', '2025-04-05 13:27:58'),
+(122, 'I’m unable to access the internal system we normally use for document storage and sharing. I’ve tried using the mapped drive and the direct UNC path, but I keep getting a network error saying the server can’t be found. I know this system is hosted locally on our network because we use it daily. Several people on my team are also reporting the same problem, so it’s not just an issue with my PC. I’ve tried reconnecting to the VPN and rebooting everything, but no luck.', 'INCEE36BB67', 'Resolved', 'Internal System Not Accessible Over Network', 'admin', 'Medium', 14, 1, 'The server hosting the internal file system had a network routing issue that was preventing connections. After restarting the file sharing service and refreshing name resolution, users were able to access the system again without issues.', '2025-04-05 13:28:12'),
+(123, 'The shared department server we normally use for uploading files is completely inaccessible today. It worked fine yesterday, but now when I try to open it from the mapped drive, it just gives a “path not found” or “unreachable” error. I’ve checked that I’m on the company network and also tried to ping the server, but it doesn’t respond. I also asked around and no one else can access it either. We store all project documentation there, so this is pretty urgent.', 'INCD8913336', 'Resolved', 'Shared Department Server Down – Can’t Reach Files', 'admin', 'Medium', 13, 1, 'The shared server experienced a failure in its network service module. After restarting the service and forcing DNS re-registration, connectivity was restored. Multiple users confirmed successful file access after the fix.', '2025-04-05 13:28:26'),
+(124, 'I’m trying to install a piece of software on my laptop for a project, but I keep getting a message that says I need administrator permission. The installation stops halfway and won’t continue unless I enter admin credentials. I don’t have those rights on my machine, and I need this tool to complete a task that’s due by the end of the week. I’ve tried running the installer as administrator, but Windows prompts me for a username and password I don’t have. Can someone assist in getting this installed?', 'INC0097EDC2', 'Resolved', 'Installation Blocked by Admin Rights', 'admin', 'Medium', 13, 1, 'The software installation was blocked due to insufficient user permissions. After confirming the software was approved for use, we remotely connected to the user’s device using our admin credentials and completed the installation successfully.', '2025-04-05 13:35:15'),
+(125, 'I’ve tried multiple times to install the required software for a training course, but the setup crashes midway with an error message. It says something about a failed write operation or permission denied. I’ve tried running the installer again, restarting my laptop, and even downloading a fresh copy, but the same thing happens every time. I don’t have admin access on this device, so I’m not sure if that’s part of the issue. Can someone from IT take a look?', 'INC4C2AA5C4', 'Resolved', 'Software Installer Throws an Error Midway', 'admin', 'Medium', 13, 1, 'The installation failure was caused by permission restrictions on the device. After confirming the software’s legitimacy, we remotely installed the application using IT admin credentials. User verified it is working as expected.', '2025-04-05 13:35:30'),
+(126, 'I’m supposed to install software for a task I\'m working on, but I get an “Access Denied” error whenever I launch the installer. The system won’t let me proceed without administrator access, and I don’t have the credentials. I tried to look for a workaround or a version that doesn’t need admin rights, but had no luck. I need this installed by tomorrow, so I’d appreciate any help getting it set up.', 'INC0BE79E30', 'Resolved', 'Unable to Install Required Software – Access Denied', 'admin', 'Medium', 14, 1, 'Installation was blocked by the device’s security policy due to lack of admin rights. The IT team connected remotely, ran the installer with elevated privileges, and completed the process. Software is now fully functional and ready to use.', '2025-04-05 13:35:44'),
+(127, 'I’ve been trying to access the company intranet since this morning, but it won’t load at all. I’ve tried using both Chrome and Edge, and I either get a blank page or a timeout message. I cleared my cache, restarted my computer, and made sure I was connected to the network, but the issue still persists. I asked a few coworkers and they said it’s working fine for them, so it seems like the issue is specific to my setup. I rely on this portal to check internal announcements, access HR forms, and use the quick links we have stored there.', 'INC6A5786DD', 'Resolved', 'Internal Portal Not Loading on Chrome or Edge', 'admin', 'Medium', 13, 1, 'The issue was caused by incorrect proxy settings in the user’s browser, which prevented the internal URL from resolving properly. We disabled auto proxy detection, refreshed DNS, and the intranet loaded correctly afterward.', '2025-04-05 13:38:23'),
+(128, 'I can’t access the company’s internal website. Every time I try, the page just loads endlessly and eventually times out with a “site can’t be reached” message. I’ve confirmed that my internet connection is fine and that external websites are working normally. I also tried connecting via VPN just in case it was a network restriction, but that didn’t make a difference either. I use this portal every day to submit reports and check updates, so I need to get back in as soon as possible.', 'INCFAA801A5', 'Resolved', 'Company Intranet Just Times Out When I Try to Access It', 'admin', 'Medium', 14, 1, 'A DNS caching issue on the user’s system was preventing the intranet domain from resolving. We flushed the DNS cache, cleared the browser history, and reloaded the site. The page loaded correctly and has continued working since.', '2025-04-05 13:38:36'),
+(129, 'I’m trying to log into the internal HR portal we use, but it’s not opening at all. I keep getting a “page not found” or “can’t reach this site” message no matter which browser I use. I’ve double-checked the address, restarted the browser and my device, and made sure I’m connected to the office network. Other coworkers said it’s loading fine for them, so I think it might be something wrong on my machine. I need to log in today to download a few documents for a meeting.', 'INCC44D830F', 'Resolved', 'Can’t Access Internal Site – Getting Page Not Found', 'admin', 'Medium', 14, 1, 'The issue was caused by the network adapter using an external DNS server, which failed to resolve the internal hostname. After setting the correct internal DNS IP and rebooting the system, the user was able to access the portal without any further errors.', '2025-04-05 13:38:50'),
+(130, 'I’ve been trying to submit my timesheet for this week, but every time I enter my hours and click save, nothing happens. The screen just refreshes and all my hours disappear. I’ve double-checked that I entered everything correctly, and I’ve even tried switching browsers and using a different computer, but I keep getting the same issue. This is delaying my ability to log worked time, and I’m concerned it might impact payroll if it doesn’t go through in time.', 'INCC196B444', 'Resolved', 'Unable to Submit Timesheet – Hours Won’t Save', 'admin', 'Low', 15, 3, 'The issue was caused by a validation error in the timesheet submission form related to a hidden metadata field. We applied a fix in the backend, and the user was able to successfully submit their hours afterward.', '2025-04-06 08:34:11'),
+(131, 'I’ve entered my hours twice now for this week, but the system won’t save them. When I go back into the timesheet, all the fields are blank again, like it didn’t register anything. I’m worried I’ll miss the cutoff for submitting my time. I tried refreshing, restarting, and using a different browser, but the issue still occurs. This is the first time this has happened, and I’ve submitted timesheets before without any issues.', 'INC181206E6', 'Resolved', 'Can’t Log Hours – Timesheet Keeps Resetting', 'admin', 'Low', 16, 3, 'A front-end glitch was preventing the timesheet data from binding properly to the form fields before submission. We deployed a fix and the user was able to log their hours successfully. Submission confirmed and saved in the system.', '2025-04-06 08:34:24'),
+(132, 'I’ve been trying to submit my timesheet for the last two days, but every time I hit the submit button, I get an error message that says “unexpected error occurred – please try again.” I’ve made sure all the fields are filled in correctly and even logged out and back in, but nothing is working. I asked a colleague, and they were able to submit theirs without issue. It seems like something is wrong with my account or maybe the system for just my profile.', 'INC55DB53D6', 'Resolved', 'Timesheet Won’t Submit – Error Every Time I Try', 'admin', 'Low', 15, 3, 'The user’s account had a misconfigured role tag that was causing a system-level error during timesheet submission. After correcting the configuration, the timesheet was submitted without issue. Error no longer appears.', '2025-04-06 08:34:43'),
+(133, 'We have a new employee who started today, but they can’t log into any of the systems. Their email account hasn’t been created, and they also don’t have access to the HR portal or internal tools. We submitted the onboarding request last week, so I expected everything to be ready by now. The employee is just sitting idle at the moment, and we need to get them up and running as soon as possible so they can begin training and access onboarding materials.', 'INCDBF12D04', 'Resolved', 'New Hire Can’t Log Into Any Systems', 'admin', 'Medium', 15, 3, 'The onboarding automation process did not run for this user due to a misconfigured HR form. Accounts were manually provisioned, including email and portal access. The new employee can now log in and begin the onboarding process.', '2025-04-06 08:39:06'),
+(134, 'One of our new hires started today, but their profile isn’t showing up in the company directory or the HR system. We filled out the onboarding form a few days ago and expected everything to be set up by now. They also haven’t received their welcome email or credentials. We need to give them access to the internal training systems and get them set up with a company email as soon as possible.', 'INC37F46F9F', 'Resolved', 'New Employee Doesn’t Appear in Directory or HR Portal', 'admin', 'Low', 15, 3, 'The user record was missing from the directory due to an automation failure in the HRIS onboarding flow. We created the account manually, assigned the proper roles, and confirmed the employee now appears in both the directory and HR portal.', '2025-04-06 08:39:20'),
+(135, 'A new team member joined us today, but they’re unable to log in to anything. They haven’t received their company email credentials, and they don’t appear to have access to any of the internal tools or systems. We submitted their onboarding information on time, so I’m not sure why this happened. It’s holding up their first-day orientation and access to required resources.', 'INCE4894A9D', 'Resolved', 'New Staff Member Has No Access to Tools or Email', 'admin', 'Low', 16, 3, 'The employee account was not generated due to a processing issue in the onboarding pipeline. We manually created the necessary accounts, including email and tool access, and verified the employee was able to log in and proceed with onboarding tasks.', '2025-04-06 08:39:33'),
+(136, 'I’ve noticed that every time I try to open our CRM system while connected to the company VPN, the application crashes within a few seconds. It loads briefly and then freezes before shutting down. If I disconnect from the VPN, the app works just fine, so it seems like the issue is specifically related to the secure connection. I’ve tried restarting my device, reinstalling the CRM client, and connecting to a different network, but the problem only happens when I’m on the VPN. This is impacting my ability to work remotely.', 'INCB7262652', 'Resolved', 'CRM Application Crashes While Connected to VPN', 'admin', 'Medium', 13, 1, 'The CRM application was attempting to reach an external licensing server that was being blocked or rerouted through the VPN. A split-tunnel configuration was applied to allow the app to connect directly to that domain outside the VPN. After applying the policy, the CRM functioned without crashes.', '2025-04-06 08:44:01');
+INSERT INTO `incident` (`id`, `description`, `incident_number`, `status`, `title`, `created_by`, `severity_level`, `assigned_admin_id`, `assigned_team_id`, `resolution`, `created_at`) VALUES
+(137, 'I’m trying to launch our internal reporting application while working remotely, but every time I’m connected to the VPN, the app crashes immediately after startup. It works perfectly when I’m on the office network or disconnected from VPN, so the issue seems tied to the remote connection. I’ve already checked for software updates, reinstalled the tool, and made sure my VPN client is up to date. This has been happening consistently for a few days and I can’t generate any reports while working from home.', 'INC3D483593', 'Resolved', 'VPN Causes Reporting Tool to Crash on Startup', 'admin', 'Medium', 13, 1, 'The application relied on an external authentication server that was unreachable while fully routed through the VPN. We applied a split-tunnel exception for the authentication domain, and after that, the app launched successfully with no further crashes.', '2025-04-06 08:44:13'),
+(138, 'Every time I connect to the VPN and try to use one of our key internal apps, it crashes almost instantly. If I close the VPN and run the app locally, it works fine. I’ve tried rebooting, reinstalling, and even testing on a different laptop — same behavior. I suspect it has something to do with the way the VPN handles certain connections or how the app tries to communicate with outside servers. It’s making it impossible to do my tasks from home.', 'INCCCACD578', 'Resolved', 'Application Only Crashes When I’m Logged Into VPN', 'admin', 'Medium', 14, 1, 'The crash was caused by the app failing to validate a license key due to VPN routing restrictions. After allowing direct access to the external endpoint through split tunneling, the application ran correctly. Issue resolved and confirmed by the user.', '2025-04-06 08:44:27'),
+(139, 'I’ve noticed that I’m no longer getting any notifications from Microsoft Teams. Even when someone sends me a direct message or mentions me in a channel, I don’t receive a popup or sound. I checked my Teams notification settings, and everything seems enabled. I also verified that Focus Assist isn’t turned on in Windows, and I’m not in Do Not Disturb mode either. I’ve missed a few important messages today because of this, and it’s becoming a problem for staying in sync with my team.', 'INC0835D40D', 'Resolved', 'Not Getting Notifications from Microsoft Teams', 'admin', 'Low', 13, 1, 'The issue was due to Windows Focus Assist settings automatically activating during certain hours, suppressing Teams notifications. After adjusting those system settings and restarting Teams, notifications started appearing as expected.', '2025-04-06 08:48:22'),
+(141, 'I’m no longer getting notifications from our team chat app when someone messages me. I have the app open in the background, and I see messages when I open it, but I get no alerts, sounds, or banners. I’ve checked both the in-app settings and Windows notification settings, and everything looks normal. I also made sure it’s not minimized in the system tray or set to silent mode. This has caused me to miss several urgent messages over the last day or two.', 'INC78D2E6BE', 'Resolved', 'Message Notifications Not Showing for Team Chat App', 'admin', 'Low', 13, 1, 'The chat app was running in background mode without the necessary OS-level notification access. After granting permissions and restarting the app, notification banners and sounds were restored. User confirmed issue was resolved.', '2025-04-06 08:48:46'),
+(142, 'I haven’t been receiving any notifications from Microsoft Teams lately. Even when someone sends me a direct message or tags me in a group chat, I don’t get any pop-up or banner notifications. I’ve made sure that notification settings are enabled inside Teams, and I also checked my Windows settings — Teams is allowed to send notifications there too. This just started a couple of days ago, and I’ve already missed some important updates from my manager because of it. Everything was working fine last week.', 'INCFC9BB62F', 'Resolved', 'No Notifications Appearing in Teams for Mentions or Chats', 'admin', 'Low', 14, 1, 'Microsoft Teams notifications were not appearing due to system-level permissions being disabled during a Windows update. After re-enabling the Teams app in the Windows notification settings and restarting the client, alerts began appearing normally again.', '2025-04-06 08:49:53');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `incident_comment`
+--
+
+CREATE TABLE `incident_comment` (
+  `id` bigint(20) NOT NULL,
+  `content` varchar(255) DEFAULT NULL,
+  `timestamp` datetime(6) DEFAULT NULL,
+  `author_id` bigint(20) NOT NULL,
+  `incident_id` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `incident_comment`
+--
+
+INSERT INTO `incident_comment` (`id`, `content`, `timestamp`, `author_id`, `incident_id`) VALUES
+(6, 'Confirmed issue from multiple users. Logs collected from Exchange server.', '2025-04-03 10:52:57.000000', 1, 66),
+(7, 'Rebooted mail server after adjusting queue settings.', '2025-04-03 10:53:03.000000', 1, 66),
+(8, 'Users verified synchronization is now working correctly.', '2025-04-03 10:53:10.000000', 1, 66),
+(9, 'Login bug confirmed on dev and staging environments.', '2025-04-03 10:54:10.000000', 1, 67),
+(10, 'Rollback initiated and tested on production.', '2025-04-03 10:54:22.000000', 1, 67),
+(11, 'Issue resolved and access restored for all users.', '2025-04-03 10:54:28.000000', 1, 67),
+(12, 'Confirmed that Solr indexing service had halted.', '2025-04-03 10:55:56.000000', 1, 68),
+(13, 'Manual reindex in progress, expected completion in 1 hour.', '2025-04-03 10:56:03.000000', 1, 68),
+(14, 'Search results verified by QA. Ticket closed.', '2025-04-03 10:56:09.000000', 1, 68),
+(15, 'Error logs reviewed, NPE traced to escalation module.', '2025-04-03 10:58:08.000000', 1, 69),
+(16, 'Hotfix deployed after testing on staging.', '2025-04-03 10:58:13.000000', 1, 69),
+(17, 'Escalation verified by multiple agents.', '2025-04-03 10:58:19.000000', 1, 69),
+(18, 'Finance team unable to launch internal tools', '2025-04-03 10:58:56.000000', 1, 70),
+(19, 'Antivirus rule updated to allow specific executables.', '2025-04-03 10:59:03.000000', 1, 70),
+(20, 'Vendor acknowledged the false positive. Waiting on patch.', '2025-04-03 10:59:09.000000', 1, 70),
+(21, 'Payroll team reported failed transfer and received no confirmation from bank.', '2025-04-03 10:59:45.000000', 1, 71),
+(22, 'Firewall policy reviewed, port 22 was restricted.', '2025-04-03 10:59:51.000000', 1, 71),
+(23, 'Transfer succeeded after policy update.', '2025-04-03 10:59:59.000000', 1, 71),
+(24, 'Reproducible on latest Chrome build.', '2025-04-03 11:00:52.000000', 1, 72),
+(25, 'Patch released via Chrome Web Store. No crashes since.', '2025-04-03 11:00:59.000000', 1, 72),
+(26, 'Data backup lagging by multiple hours.', '2025-04-03 11:01:34.000000', 1, 73),
+(27, 'New schedule tested and validated', '2025-04-03 11:01:43.000000', 1, 73),
+(28, 'HR confirmed submission received on Friday.', '2025-04-03 11:02:18.000000', 1, 74),
+(29, 'API log shows POST request timeout.', '2025-04-03 11:02:27.000000', 1, 74),
+(30, 'Manual entry completed. Automation resumed.', '2025-04-03 11:02:34.000000', 1, 74),
+(31, 'Graphs failing with 403 unauthorized error.', '2025-04-03 11:03:24.000000', 1, 75),
+(32, 'Token expired prematurely due to misconfiguration.', '2025-04-03 11:03:31.000000', 1, 75),
+(33, 'Token regenerated and distributed.', '2025-04-03 11:03:37.000000', 1, 75),
+(34, 'Initial investigation shows timeout occurs only during large file uploads over 3MB.', '2025-04-03 12:04:05.000000', 1, 76),
+(35, 'Network logs from 11 AM to 1 PM confirm bandwidth congestion.', '2025-04-03 12:04:10.000000', 1, 76),
+(36, 'Switch replacement and bandwidth adjustments resolved the issue.', '2025-04-03 12:04:17.000000', 1, 76),
+(37, 'Usernames with symbols were not parsed correctly by backend validation.', '2025-04-03 12:05:10.000000', 1, 77),
+(38, 'Tested with 3 sample usernames – now working fine.', '2025-04-03 12:05:21.000000', 1, 77),
+(39, 'Confirmed with original user that login works after patch.', '2025-04-03 12:05:32.000000', 1, 77),
+(40, 'AD role mismatch for newer staff confirmed', '2025-04-03 12:06:03.000000', 1, 78),
+(41, 'Applied group policy fix to auto-assign correct ACL roles.', '2025-04-03 12:06:09.000000', 1, 78),
+(42, 'Access verified by 5 random affected users – all successful.', '2025-04-03 12:06:16.000000', 1, 78),
+(43, 'Webhook invalidated after security rotation update.', '2025-04-03 12:06:50.000000', 1, 79),
+(44, 'All test alerts now received on Slack and email.', '2025-04-03 12:06:56.000000', 1, 79),
+(47, 'Error message updated to better guide users.', '2025-04-03 12:10:59.000000', 1, 81),
+(48, 'Also added tooltip next to the field for extra guidance.', '2025-04-03 12:11:05.000000', 1, 81),
+(49, 'Onboarding errors like this can affect day-one productivity. Glad we caught it quickly.', '2025-04-03 12:14:06.000000', 1, 82),
+(50, 'Consider setting up automated validation post-HR data entry.', '2025-04-03 12:14:14.000000', 1, 82),
+(51, 'Serious miss, but glad it didn’t affect more staff.', '2025-04-03 12:14:49.000000', 1, 83),
+(52, 'Manual payroll triggers should include maternity returnees check.', '2025-04-03 12:14:55.000000', 1, 83),
+(53, 'Can we audit the Feb payroll batch further?', '2025-04-03 12:15:01.000000', 1, 83),
+(54, 'Using LMS from the start would have avoided this.', '2025-04-03 12:15:33.000000', 1, 84),
+(55, 'Audit results shared with compliance officer.', '2025-04-03 12:15:39.000000', 1, 84),
+(56, 'Transition logic in leave module needs improvement', '2025-04-03 12:16:11.000000', 1, 85),
+(57, 'Reviewed and resolved similar errors for 3 more staff.', '2025-04-03 12:16:17.000000', 1, 85),
+(58, 'Automation will prevent future oversights like this.', '2025-04-03 12:16:49.000000', 1, 86),
+(59, 'Renewal alerts now enabled system-wide.', '2025-04-03 12:16:55.000000', 1, 86),
+(60, 'Investigating DNS settings and SPF/DKIM records.', '2025-04-03 12:22:49.000000', 1, 87),
+(61, 'SPF record updated, awaiting delisting confirmation.', '2025-04-03 12:22:56.000000', 1, 87),
+(62, 'Issue appears tied to the deployment package integrity.', '2025-04-03 12:23:38.000000', 1, 88),
+(63, 'Testing clean deployment on 3 sandbox machines.', '2025-04-03 12:23:44.000000', 1, 88),
+(64, 'e-deployment completed successfully.', '2025-04-03 12:23:51.000000', 1, 88),
+(65, 'Affected users sent for verification.', '2025-04-03 12:24:27.000000', 1, 89),
+(66, 'Reset logic reviewed and bug replicated.', '2025-04-03 12:24:33.000000', 1, 89),
+(67, 'Fix deployed and confirmed with HR team.', '2025-04-03 12:24:38.000000', 1, 89),
+(68, 'Confirmed SSL cert expired 2 days ago.', '2025-04-03 12:25:17.000000', 1, 90),
+(69, 'Renewal requested from internal CA.', '2025-04-03 12:25:22.000000', 1, 90),
+(70, 'Deployment pushed to all clients.', '2025-04-03 12:25:27.000000', 1, 90),
+(71, 'Affected users mostly on Windows 11.', '2025-04-03 12:26:01.000000', 1, 91),
+(72, 'Tested manual re-map — works temporarily.', '2025-04-03 12:26:08.000000', 1, 91),
+(73, 'Updated GPO rolled out successfully.', '2025-04-03 12:26:14.000000', 1, 91),
+(74, 'Looking into the access point logs now.', '2025-04-03 12:31:50.000000', 1, 92),
+(75, 'Issue might be DHCP-related; running further checks.', '2025-04-03 12:31:56.000000', 1, 92),
+(76, 'Confirmed power and input source. Replacing cable.', '2025-04-03 12:32:30.000000', 1, 93),
+(77, 'Testing with another laptop next.', '2025-04-03 12:32:36.000000', 1, 93),
+(78, 'Sending a new reset email manually.', '2025-04-03 12:33:08.000000', 1, 94),
+(79, 'User confirmed they now received the new link.', '2025-04-03 12:33:13.000000', 1, 94),
+(80, 'User tried reinstalling printer – didn’t work.', '2025-04-03 12:33:48.000000', 1, 95),
+(81, 'Printer queue appears stuck.', '2025-04-03 12:33:54.000000', 1, 95),
+(82, 'Possibly an issue with ActiveSync.', '2025-04-03 12:35:40.000000', 1, 96),
+(83, 'Checked server logs – sync attempts blocked.', '2025-04-03 12:35:45.000000', 1, 96),
+(84, 'Asked the user to verify their Wi-Fi credentials and confirm the issue occurs on other networks.', '2025-04-03 12:38:40.000000', 1, 97),
+(85, 'Confirmed the laptop works on mobile hotspot. Issue appears limited to enterprise Wi-Fi config.', '2025-04-03 12:38:46.000000', 1, 97),
+(86, 'MAC address checked against blocklist — not listed.', '2025-04-03 12:38:52.000000', 1, 97),
+(87, 'Ran a connectivity log overnight, signal strength fluctuates heavily in that zone', '2025-04-03 12:39:23.000000', 1, 98),
+(88, 'Laptop drivers last updated over a year ago. Installed latest Intel Wi-Fi driver.', '2025-04-03 12:39:30.000000', 1, 98),
+(89, 'No issues on wired connection. Possibly hardware degradation', '2025-04-03 12:39:35.000000', 1, 98),
+(90, 'Checked group policy and network config — no obvious misconfigurations.', '2025-04-03 12:40:05.000000', 1, 99),
+(91, 'Suspected machine is not joined to the correct AD group for wireless policy access.', '2025-04-03 12:40:11.000000', 1, 99),
+(92, 'Re-added the machine to the correct OU and synced policies.', '2025-04-03 12:40:17.000000', 1, 99),
+(93, 'Logged error codes from the mail server.', '2025-04-03 13:22:34.000000', 1, 100),
+(94, 'Issue seems limited to outbound mail.', '2025-04-03 13:22:39.000000', 1, 100),
+(95, 'DNS settings are being reviewed.', '2025-04-03 13:22:44.000000', 1, 100),
+(96, 'User complaints from Sales and HR.', '2025-04-03 13:23:27.000000', 1, 101),
+(97, 'Affected domains include major providers.', '2025-04-03 13:23:31.000000', 1, 101),
+(98, 'Possibly linked to DNS changes.', '2025-04-03 13:23:35.000000', 1, 101),
+(99, 'Mail flow checked—internal works fine.', '2025-04-03 13:23:45.000000', 1, 102),
+(100, 'Outbox logs show repeated retries.', '2025-04-03 13:23:49.000000', 1, 102),
+(101, 'Mail team alerted for deeper review.', '2025-04-03 13:23:54.000000', 1, 102),
+(102, 'HR team reviewing email dispatch logs for March cycle.', '2025-04-03 13:35:19.000000', 1, 103),
+(103, 'Reconfirmed the employee’s email address in the payroll system.', '2025-04-03 13:35:31.000000', 1, 103),
+(104, 'Verified no bounce-back emails for the employee’s address.', '2025-04-03 13:35:39.000000', 1, 104),
+(105, 'Payslip found in system but was not included in auto-send batch.', '2025-04-03 13:35:46.000000', 1, 104),
+(106, 'Investigated payroll report logs, user marked as “excluded.”', '2025-04-03 13:35:58.000000', 1, 105),
+(107, 'Manually extracted slip and verified data accuracy.', '2025-04-03 13:36:03.000000', 1, 105),
+(108, 'Checked internal VPN logs — showing multiple session timeouts from this user’s IP.', '2025-04-05 13:49:42.000000', 1, 106),
+(109, 'Escalated to network support to verify backend VPN stability for remote users.', '2025-04-05 13:49:48.000000', 1, 106),
+(110, 'Confirmed user\'s client version was outdated — sent update instructions.', '2025-04-05 13:50:05.000000', 1, 107),
+(111, 'Monitored session logs post-update — no further disconnections recorded.', '2025-04-05 13:50:31.000000', 1, 107),
+(112, 'Validated internet stability from the user\'s ISP — no external issues found.', '2025-04-05 13:50:53.000000', 1, 108),
+(113, 'Reset VPN session on the server and advised reinstall of client.', '2025-04-05 13:50:59.000000', 1, 108),
+(114, 'Checked user’s 2FA setup — SMS gateway delivery failure confirmed.', '2025-04-05 13:53:33.000000', 1, 109),
+(115, 'Reconfigured 2FA channel to email temporarily while investigating SMS issues.', '2025-04-05 13:53:39.000000', 1, 109),
+(116, 'Confirmed user’s phone number was correct in profile.', '2025-04-05 13:53:58.000000', 1, 110),
+(117, 'Switched delivery method to email-based OTP for immediate access.', '2025-04-05 13:54:04.000000', 1, 110),
+(118, 'User’s phone network logs show normal operation — 2FA texts not reaching device.', '2025-04-05 13:54:33.000000', 1, 111),
+(119, 'Temporarily enabled app-based 2FA using Authenticator for login.', '2025-04-05 13:54:39.000000', 1, 111),
+(120, 'Verified that the user is not included in the HR drive security group in Active Directory.', '2025-04-05 14:04:22.000000', 1, 112),
+(121, 'Added user to the appropriate access group and confirmed permission update replicated successfully.', '2025-04-05 14:04:27.000000', 1, 112),
+(122, 'Confirmed user account was not part of the HR drive’s access group. Cross-referenced user role in internal directory.', '2025-04-05 14:04:51.000000', 1, 113),
+(123, 'Manually assigned the required access level and verified drive access from the user\'s machine.', '2025-04-05 14:04:56.000000', 1, 113),
+(124, 'Reviewed access logs and found user was removed from the HR security group last week during a role transition update.', '2025-04-05 14:05:16.000000', 1, 114),
+(125, 'Access group membership restored. User logged in again and successfully accessed the shared folder.', '2025-04-05 14:05:24.000000', 1, 114),
+(126, 'Checked leave request logs — status marked as approved, but balance not updated.', '2025-04-05 14:21:51.000000', 1, 115),
+(127, 'Forwarded to payroll/HRIS support to verify sync between leave module and employee profile.', '2025-04-05 14:21:56.000000', 1, 115),
+(128, 'Confirmed approved leave dates in the system match the user’s absence.', '2025-04-05 14:22:11.000000', 1, 116),
+(129, 'Found discrepancy in the automated deduction process; referred to HR system team.', '2025-04-05 14:22:15.000000', 1, 116),
+(130, 'Leave approval confirmed in records; mismatch found between approved leave and balance shown.', '2025-04-05 14:22:36.000000', 1, 117),
+(131, 'Issue escalated to HRIS team for manual correction and investigation.', '2025-04-05 14:22:43.000000', 1, 117),
+(132, 'Inspected the printer hardware – visible jam not found but error persists.', '2025-04-05 14:24:43.000000', 1, 118),
+(133, 'Scheduled an internal hardware inspection for deeper component check.', '2025-04-05 14:24:48.000000', 1, 118),
+(134, 'Verified power cycle did not resolve jam alert; no obvious blockage found.', '2025-04-05 14:25:08.000000', 1, 119),
+(135, 'Advanced tray inspection revealed internal obstruction near rear rollers.', '2025-04-05 14:25:14.000000', 1, 119),
+(136, 'Printer taken offline temporarily; logged error code shows internal jam sensor triggered.', '2025-04-05 14:25:32.000000', 1, 120),
+(137, 'Notified on-site support to investigate hardware components', '2025-04-05 14:25:36.000000', 1, 120),
+(138, 'Ping to server address failed from multiple test machines.', '2025-04-05 14:29:07.000000', 1, 121),
+(139, 'Server services checked — file share service not responding.', '2025-04-05 14:29:12.000000', 1, 121),
+(140, 'Confirmed shared path was unreachable across multiple subnets.', '2025-04-05 14:29:29.000000', 1, 122),
+(141, 'Restarted core file server service and flushed DNS cache on local machines.', '2025-04-05 14:29:34.000000', 1, 122),
+(142, 'Server unreachable via standard network tools – verified on-site power status and availability.', '2025-04-05 14:29:52.000000', 1, 123),
+(143, 'Restarted file sharing service and re-registered name with local DNS.', '2025-04-05 14:29:57.000000', 1, 123),
+(144, 'Confirmed user does not have elevated privileges on their assigned machine.', '2025-04-05 14:36:12.000000', 1, 124),
+(145, 'Requested name and purpose of software to verify compliance before proceeding.', '2025-04-05 14:36:17.000000', 1, 124),
+(146, 'Installer log reviewed – permissions error confirmed on attempted file write to Program Files.', '2025-04-05 14:36:35.000000', 1, 125),
+(147, 'Approved installation after validating software usage; initiated remote session to assist.', '2025-04-05 14:36:39.000000', 1, 125),
+(148, 'The installation failure was caused by permission restrictions on the device. After confirming the software’s legitimacy, we remotely installed the application using IT admin credentials. User verified it is working as expected.', '2025-04-05 14:36:44.000000', 1, 125),
+(149, 'Confirmed software not yet installed on user’s machine – permissions error shown at launch.', '2025-04-05 14:37:00.000000', 1, 126),
+(150, 'Reviewed licensing and compliance – cleared for internal use.', '2025-04-05 14:37:05.000000', 1, 126),
+(151, 'Checked intranet URL remotely – accessible from multiple locations internally.', '2025-04-05 14:39:29.000000', 1, 127),
+(152, 'Investigated local machine settings – proxy auto-config interfering with internal routing.', '2025-04-05 14:39:33.000000', 1, 127),
+(153, 'Confirmed site was available externally – no issue on server side.', '2025-04-05 14:39:50.000000', 1, 128),
+(154, 'User device had stale DNS entries blocking resolution of internal host.', '2025-04-05 14:39:54.000000', 1, 128),
+(155, 'User\'s network adapter settings were causing misrouted DNS queries.', '2025-04-05 14:40:10.000000', 1, 129),
+(156, 'Updated adapter DNS to internal DNS IP and cleared browser cache.', '2025-04-05 14:40:14.000000', 1, 129),
+(157, 'Replicated issue on user account – submission fails on save.', '2025-04-06 09:35:30.000000', 1, 130),
+(158, 'Checked logs – validation errors due to hidden field conflict.', '2025-04-06 09:35:35.000000', 1, 130),
+(159, 'Verified form resets on entry – no records logged in backend database.', '2025-04-06 09:36:28.000000', 1, 131),
+(160, 'Bug tracked to frontend data binding issue.', '2025-04-06 09:36:32.000000', 1, 131),
+(161, 'Tested with user account – triggered same error on multiple attempts.', '2025-04-06 09:36:51.000000', 1, 132),
+(162, 'Found data mismatch in submission payload tied to user role.', '2025-04-06 09:36:56.000000', 1, 132),
+(163, 'Checked onboarding request logs – no automation triggered for this user ID.', '2025-04-06 09:40:28.000000', 1, 133),
+(164, 'Provisioned email and HR access manually and flagged workflow failure.', '2025-04-06 09:40:33.000000', 1, 133),
+(165, 'Confirmed onboarding submission date – automation did not trigger user creation.', '2025-04-06 09:40:51.000000', 1, 134),
+(166, 'Opened ticket with HRIS team to identify system flow issue.', '2025-04-06 09:40:55.000000', 1, 134),
+(167, 'No user account found in Active Directory – provisioning failed at initial step.', '2025-04-06 09:41:14.000000', 1, 135),
+(168, 'Escalated to HR system team for root cause and created user manually.', '2025-04-06 09:41:18.000000', 1, 135),
+(169, 'Tested CRM client with VPN active — confirmed crash behavior replicates consistently.', '2025-04-06 09:45:14.000000', 1, 136),
+(170, 'Checked traffic logs — application not resolving licensing server while tunneled.', '2025-04-06 09:45:18.000000', 1, 136),
+(171, 'Crash logs indicate application timeout during external authentication handshake.', '2025-04-06 09:45:36.000000', 1, 137),
+(172, 'Routed DNS traffic manually to test endpoint connectivity outside of VPN.', '2025-04-06 09:45:41.000000', 1, 137),
+(173, 'Tested application while toggling VPN on/off – crash occurs only during VPN session.', '2025-04-06 09:46:05.000000', 1, 138),
+(174, 'Investigated firewall rules – outbound access to external validation endpoint blocked under VPN tunnel.', '2025-04-06 09:46:11.000000', 1, 138),
+(175, 'Verified user notification settings within Teams – all properly configured.', '2025-04-06 09:50:40.000000', 1, 139),
+(176, 'Checked Windows notification center – Teams notifications were being silently suppressed by system focus mode.', '2025-04-06 09:50:46.000000', 1, 139),
+(177, 'Tested notification behavior on user machine – verified no banners or alerts received.', '2025-04-06 09:51:06.000000', 1, 141),
+(178, 'Found app process running in background mode without active notification permissions.', '2025-04-06 09:51:11.000000', 1, 141),
+(179, 'Reviewed Teams settings and confirmed that notifications were properly configured.', '2025-04-06 09:51:32.000000', 1, 142),
+(180, 'Discovered Windows system-level notification permissions were reset after a recent OS update.', '2025-04-06 09:51:37.000000', 1, 142);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `team`
+--
+
+CREATE TABLE `team` (
+  `id` bigint(20) NOT NULL,
+  `name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `team`
+--
+
+INSERT INTO `team` (`id`, `name`) VALUES
+(1, 'IT'),
+(3, 'HR'),
+(4, 'Support');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `id` bigint(20) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `team_id` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`id`, `password`, `role`, `username`, `team_id`) VALUES
+(1, '$2a$10$N2eTFx/Cb.mUOV/14jZReeQWWcShEqPdu8ulfpFZZbhUCBhjUqRzu', 'ROLE_ADMIN', 'admin', NULL),
+(2, '$2a$10$y4Ni9isg62VIunjpXjAeWe1s26FqzwpzyVjCZZb5DLKsl2FDdV0bC', 'ROLE_USER', 'user', NULL),
+(3, '$2a$10$4yFTw/uz6K.HEXof5XLneeHe8UL.S6Gvez5I6o1Ud8NpNepGamcru', 'ROLE_ADMIN', 'newAdmin', NULL),
+(13, '$2a$10$KHTKTG8VUVxaiZOKmtDfMO/DmRZiUVpE3LBaeKJ08Aawz6xPO/ZAq', 'ROLE_ADMIN', 'john.doe', 1),
+(14, '$2a$10$uJD2kuZMqaNrQT2PLrjndOJcGpJrORKkuy8Kyz66BNLfokrk9rkGS', 'ROLE_ADMIN', 'jane.smith', 1),
+(15, '$2a$10$Qlix7Vak4wPffkq.7HLM2eIJO0f6BEiyK61D2VxgbE3ujfCFEQsg2', 'ROLE_ADMIN', 'michael.johnson', 3),
+(16, '$2a$10$NQ9/8f0HUGny4MvDVdpU1eQX2pb0Vbgl2lj5iQmcePT51uUnP3Pzu', 'ROLE_ADMIN', 'sarah.williams', 3),
+(17, '$2a$10$MMPXiL.b7RwpVoB6n871X.cD2dlGXN8hs1CjbzV.zH9fvUcZqvjv.', 'ROLE_ADMIN', 'david.brown', 4),
+(18, '$2a$10$UwdwU8859lVZrcdqpkXlLusrIH06jSS1V9QSeG4jGyt66wrvJqyVq', 'ROLE_ADMIN', 'emily.davis', 4);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `incident`
+--
+ALTER TABLE `incident`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UK2raan45poryrk8119u6ai22c5` (`incident_number`),
+  ADD KEY `FKkbvtuosp6ajrfob5ishhlltaq` (`assigned_admin_id`),
+  ADD KEY `FK1qfwmtvqsute9eww3mfnjm2mt` (`assigned_team_id`);
+
+--
+-- Indexes for table `incident_comment`
+--
+ALTER TABLE `incident_comment`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK575cl1nci5259uxprw3bb5urh` (`author_id`),
+  ADD KEY `FK2if6cp719obp3ckrtix2eoixq` (`incident_id`);
+
+--
+-- Indexes for table `team`
+--
+ALTER TABLE `team`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `UKsb8bbouer5wak8vyiiy4pf2bx` (`username`),
+  ADD KEY `FKbmqm8c8m2aw1vgrij7h0od0ok` (`team_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `incident`
+--
+ALTER TABLE `incident`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
+
+--
+-- AUTO_INCREMENT for table `incident_comment`
+--
+ALTER TABLE `incident_comment`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=182;
+
+--
+-- AUTO_INCREMENT for table `team`
+--
+ALTER TABLE `team`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `incident`
+--
+ALTER TABLE `incident`
+  ADD CONSTRAINT `FK1qfwmtvqsute9eww3mfnjm2mt` FOREIGN KEY (`assigned_team_id`) REFERENCES `team` (`id`),
+  ADD CONSTRAINT `FKkbvtuosp6ajrfob5ishhlltaq` FOREIGN KEY (`assigned_admin_id`) REFERENCES `user` (`id`);
+
+--
+-- Constraints for table `incident_comment`
+--
+ALTER TABLE `incident_comment`
+  ADD CONSTRAINT `FK2if6cp719obp3ckrtix2eoixq` FOREIGN KEY (`incident_id`) REFERENCES `incident` (`id`),
+  ADD CONSTRAINT `FK575cl1nci5259uxprw3bb5urh` FOREIGN KEY (`author_id`) REFERENCES `user` (`id`);
+
+--
+-- Constraints for table `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `FKbmqm8c8m2aw1vgrij7h0od0ok` FOREIGN KEY (`team_id`) REFERENCES `team` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
