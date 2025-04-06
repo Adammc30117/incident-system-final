@@ -1,10 +1,27 @@
 //  API Endpoints
 const apiUrl = "http://localhost:8080/api/incidents";
 const userIncidentsUrl = `${apiUrl}/user`;
-const adminIncidentsUrl = `${apiUrl}`; // Admin fetches all incidents
+const adminIncidentsUrl = `${apiUrl}`;
 const searchIncidentsUrl = `${apiUrl}/search`;
 
-//  Fetch and display incidents for the logged-in user
+// Pagination config for user incidents
+let userCurrentPage = 1;
+const userIncidentsPerPage = 10;
+let userAllIncidents = [];
+
+// Helper function to format dates like "April 6th, 13:25"
+function formatCustomDate(dateString) {
+    const date = new Date(dateString);
+    const options = { month: "long", day: "numeric" };
+    const formattedDate = date.toLocaleDateString("en-US", options);
+    const day = date.getDate();
+    const suffix = (day % 10 === 1 && day !== 11) ? "st" :
+        (day % 10 === 2 && day !== 12) ? "nd" :
+            (day % 10 === 3 && day !== 13) ? "rd" : "th";
+    const time = date.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    return `${formattedDate.replace(/\d+/, day + suffix)}, ${time}`;
+}
+
 function getUserIncidents() {
     fetch("http://localhost:8080/api/incidents/my-incidents", {
         method: "GET",
@@ -12,58 +29,104 @@ function getUserIncidents() {
     })
         .then(response => response.json())
         .then(data => {
-            const tableBody = document.querySelector("#incidents-table");
-            tableBody.innerHTML = "";
-
-            data.forEach((incident, index) => {
-                // Main row
-                const mainRow = document.createElement("tr");
-
-                const partialDescription = incident.description
-                    ? incident.description.split(" ").slice(0, 10).join(" ") + "..."
-                    : "No description";
-
-                mainRow.innerHTML = `
-                    <td>${incident.incidentNumber}</td>
-                    <td>${incident.title}</td>
-                    <td>${partialDescription}</td>
-                    <td>${incident.status}</td>
-                    <td class="text-end">
-                        <button class="btn btn-primary btn-sm" onclick="toggleUserIncidentDetails(${index})">▼</button>
-                    </td>
-                `;
-                tableBody.appendChild(mainRow);
-
-                // Detail row (initially hidden)
-                const detailRow = document.createElement("tr");
-                detailRow.id = `userIncidentDetails-${index}`;
-                detailRow.style.display = "none";
-
-                const assignedAdmin = incident.assignedAdmin?.username || "Unassigned";
-                const assignedTeam = incident.assignedTeam?.name || "Unassigned";
-
-                const detailCell = document.createElement("td");
-                detailCell.colSpan = 5;
-                detailCell.innerHTML = `
-                    <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; text-align: left;">
-                        <p><strong>Full Description:</strong> ${incident.description || "No description"}</p>
-                        <p><strong>Assigned Admin:</strong> ${assignedAdmin}</p>
-                        <p><strong>Assigned Team:</strong> ${assignedTeam}</p>
-                    </div>
-                `;
-                detailRow.appendChild(detailCell);
-
-                tableBody.appendChild(detailRow);
-            });
+            data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            userAllIncidents = data;
+            userCurrentPage = 1;
+            displayUserPaginatedIncidents();
+            updateUserPagination();
         })
         .catch(error => console.error("Error fetching user incidents:", error));
 }
 
+function displayUserPaginatedIncidents() {
+    const tableBody = document.querySelector("#incidents-table");
+    tableBody.innerHTML = "";
 
-// Toggle details function for the user’s incidents
+    const start = (userCurrentPage - 1) * userIncidentsPerPage;
+    const end = start + userIncidentsPerPage;
+    const paginatedIncidents = userAllIncidents.slice(start, end);
+
+    paginatedIncidents.forEach((incident, index) => {
+        const globalIndex = start + index;
+        const createdAtFormatted = incident.createdAt ? formatCustomDate(incident.createdAt) : "Unknown";
+        const partialDescription = incident.description ? incident.description.split(" ").slice(0, 10).join(" ") + "..." : "No description";
+
+        const mainRow = document.createElement("tr");
+        mainRow.innerHTML = `
+            <td>${incident.incidentNumber}</td>
+            <td>${incident.title}</td>
+            <td>${partialDescription}</td>
+            <td>${incident.status}</td>
+            <td>${createdAtFormatted}</td>
+            <td class="text-end">
+                <button class="btn btn-primary btn-sm" onclick="toggleUserIncidentDetails(${globalIndex})">▼</button>
+            </td>`;
+        tableBody.appendChild(mainRow);
+
+        const detailRow = document.createElement("tr");
+        detailRow.id = `userIncidentDetails-${globalIndex}`;
+        detailRow.style.display = "none";
+        const assignedAdmin = incident.assignedAdmin?.username || "Unassigned";
+        const assignedTeam = incident.assignedTeam?.name || "Unassigned";
+        detailRow.innerHTML = `
+            <td colspan="6">
+                <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; text-align: left;">
+                    <p><strong>Full Description:</strong> ${incident.description}</p>
+                    <p><strong>Assigned Admin:</strong> ${assignedAdmin}</p>
+                    <p><strong>Assigned Team:</strong> ${assignedTeam}</p>
+                    <p><strong>Submitted On:</strong> ${createdAtFormatted}</p>
+                </div>
+            </td>`;
+        tableBody.appendChild(detailRow);
+    });
+}
+
+function updateUserPagination() {
+    const paginationContainer = document.getElementById("user-pagination-controls");
+    if (!paginationContainer) return;
+    paginationContainer.innerHTML = "";
+
+    const totalPages = Math.ceil(userAllIncidents.length / userIncidentsPerPage);
+
+    const prevBtn = document.createElement("button");
+    prevBtn.innerText = "« Prev";
+    prevBtn.className = "pagination-btn me-2";
+    prevBtn.disabled = userCurrentPage === 1;
+    prevBtn.onclick = () => changeUserPage(-1);
+    paginationContainer.appendChild(prevBtn);
+
+    for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        btn.className = `pagination-btn ${i === userCurrentPage ? "active" : ""}`;
+        btn.onclick = () => {
+            userCurrentPage = i;
+            displayUserPaginatedIncidents();
+            updateUserPagination();
+        };
+        paginationContainer.appendChild(btn);
+    }
+
+    const nextBtn = document.createElement("button");
+    nextBtn.innerText = "Next »";
+    nextBtn.className = "pagination-btn ms-2";
+    nextBtn.disabled = userCurrentPage === totalPages;
+    nextBtn.onclick = () => changeUserPage(1);
+    paginationContainer.appendChild(nextBtn);
+}
+
+function changeUserPage(direction) {
+    const totalPages = Math.ceil(userAllIncidents.length / userIncidentsPerPage);
+    userCurrentPage = Math.min(Math.max(1, userCurrentPage + direction), totalPages);
+    displayUserPaginatedIncidents();
+    updateUserPagination();
+}
+
 function toggleUserIncidentDetails(index) {
     const detailRow = document.getElementById(`userIncidentDetails-${index}`);
-    detailRow.style.display = (detailRow.style.display === "none") ? "table-row" : "none";
+    if (detailRow) {
+        detailRow.style.display = detailRow.style.display === "none" ? "table-row" : "none";
+    }
 }
 
 // Fetch and display incidents for the admin dashboard

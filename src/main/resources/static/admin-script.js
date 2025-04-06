@@ -55,10 +55,12 @@ function displayIncidents() {
             <td>${incident.title}</td>
             <td>${incident.description.split(" ").slice(0, 10).join(" ")}...</td>
             <td><strong>${incident.status}</strong></td>
+            <td>${createdAtFormatted}</td> <!-- ✅ New Column -->
             <td class="text-end">
                 <button class="btn btn-secondary btn-sm incident-expand-btn" onclick="toggleDetails(${rowIndex})">▼</button>
             </td>
         `;
+
         tableBody.appendChild(row);
 
         // === Detail Row (expandable view) ===
@@ -501,10 +503,12 @@ function searchIncidentByNumber() {
                     <td>${incident.title}</td>
                     <td>${incident.description.split(" ").slice(0, 10).join(" ")}...</td>
                     <td><strong>${incident.status}</strong></td>
+                    <td>${createdAtFormatted}</td> <!-- ✅ New Column -->
                     <td class="text-end">
-                        <button class="btn btn-primary btn-sm" onclick="toggleDetails(${index})">▼</button>
+                        <button class="btn btn-secondary btn-sm incident-expand-btn" onclick="toggleDetails(${rowIndex})">▼</button>
                     </td>
                 `;
+
                 tableBody.appendChild(row);
 
                 // Build the expandable detail row for the incident
@@ -601,21 +605,6 @@ function searchIncidentByNumber() {
         .catch(error => {
             console.error("Error searching incident by number:", error);
             alert("Error searching incident. Please check console.");
-        });
-}
-
-function fetchComments(incidentId) {
-    fetch(`http://localhost:8080/api/incidents/${incidentId}/comments`)
-        .then(res => res.json())
-        .then(comments => {
-            const container = document.getElementById(`comments-container-${incidentId}`);
-            container.innerHTML = comments.map(c => `
-                <div class="mb-2">
-                    <strong>${c.createdBy}</strong> <small class="text-muted">[${formatCustomDate(c.createdAt)}]</small>
-                    <p class="mb-1">${c.content}</p>
-                    <hr />
-                </div>
-            `).join("");
         });
 }
 

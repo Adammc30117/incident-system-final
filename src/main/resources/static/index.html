@@ -73,12 +73,21 @@
             <th>Title</th>
             <th>Description</th>
             <th>Status</th>
+            <th>Created At</th>
+            <th></th>
         </tr>
         </thead>
         <tbody id="incidents-table">
         <!-- Dynamically populated rows -->
         </tbody>
     </table>
+
+    <!-- Pagination controls go here -->
+    <div id="user-pagination-controls" class="d-flex justify-content-center mt-3">
+        <button id="user-prevPage" class="btn btn-secondary me-2" onclick="changeUserPage(-1)">« Prev</button>
+        <div id="user-pageNumbers" class="btn-group"></div>
+        <button id="user-nextPage" class="btn btn-secondary ms-2" onclick="changeUserPage(1)">Next »</button>
+    </div>
 </div>
 
 <!-- Confirm Submit Incident Modal -->
