@@ -1,6 +1,6 @@
 🧠 Incident Resolution System (Final Year Project)
 This is the source code for my Final Year Project:
-"Intelligent Incident Resolution System using Machine Learning and NLP Techniques for Enhanced Support Efficiency"
+"Intelligent Incident Resolution System using NLP Techniques and Semantic Matching for Enhanced Support Efficiency"
 
 The system allows users to submit IT/HR/Support-related incidents. Admins can view and resolve them, with a powerful built-in semantic similarity feature that compares new incidents to previously resolved ones using a hybrid approach (TF-IDF + GloVe embeddings).
 
